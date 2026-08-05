@@ -2,7 +2,7 @@
 
 Interfaz de usuario para la plataforma Profile Manager (Magneto). Permite a los usuarios 
 gestionar su perfil profesional, explorar vacantes, recibir recomendaciones personalizadas 
-y hacer seguimiento a sus postulaciones en un tablero funcional[cite: 1].
+y hacer seguimiento a sus postulaciones en un tablero funcional.
 
 ## Stack Tecnológico
 - **Librería UI:** React + TypeScript
