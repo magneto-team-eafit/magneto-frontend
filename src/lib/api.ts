@@ -27,3 +27,30 @@ export async function login(input: LoginInput): Promise<LoginResponse> {
 
   return datos;
 }
+
+interface RegistroInput {
+  email: string;
+  password: string;
+}
+
+interface RegistroResponse {
+  id: string;
+  email: string;
+  createdAt: string;
+}
+
+export async function registrar(input: RegistroInput): Promise<RegistroResponse> {
+  const respuesta = await fetch(`${API_URL}/auth/registro`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(input),
+  });
+
+  const datos = await respuesta.json();
+
+  if (!respuesta.ok) {
+    throw new Error(datos.error || "Error al crear la cuenta");
+  }
+
+  return datos;
+}
