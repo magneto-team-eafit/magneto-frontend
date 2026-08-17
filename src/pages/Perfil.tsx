@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { useState, useEffect, type FormEvent } from "react";
 import { User, Phone, MapPin, FileText, Briefcase, DollarSign, Clock } from "lucide-react";
 import { Button } from "../components/ui/Button";
@@ -99,6 +100,11 @@ export function Perfil() {
         <div className="mb-6">
           <h1 className="text-2xl font-bold tracking-tight text-navy">Tu perfil</h1>
           <p className="text-sm text-muted-foreground">
+            <p className="mt-3 text-sm">
+              <Link to="/vacantes" className="font-semibold text-primary underline underline-offset-4">
+                Ver vacantes disponibles →
+              </Link>
+            </p>
             Con estos datos las empresas podrán comunicarse contigo y te mostramos vacantes 
             cerca de ti.
           </p>
