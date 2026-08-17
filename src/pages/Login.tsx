@@ -69,7 +69,7 @@ export function Login() {
             <div className="mb-8 flex flex-col gap-2">
               <h1 className="text-2xl font-bold tracking-tight text-navy">Inicia sesion</h1>
               <p className="text-sm text-muted-foreground">
-                Continua gestionando tu busqueda de empleo
+                Continúa gestionando tu búsqueda de empleo
               </p>
             </div>
 
