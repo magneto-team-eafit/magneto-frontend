@@ -15,7 +15,7 @@ export const TableroPostulaciones: React.FC<{ usuarioId: string }> = ({ usuarioI
   const [postulaciones, setPostulaciones] = useState<PostulacionItem[]>([]);
 
   useEffect(() => {
-    fetch(`http://localhost:3000/api/postulaciones/${usuarioId}`)
+    fetch(`${import.meta.env.VITE_API_URL}/postulaciones/${usuarioId}`)
       .then((res) => res.json())
       .then((data) => setPostulaciones(data))
       .catch((err) => console.error(err));

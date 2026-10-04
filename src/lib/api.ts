@@ -92,15 +92,19 @@ export async function actualizarPerfil(input: Omit<PerfilData, "id" | "completit
     return datos;
 }
 
-interface Vacante {
+export interface Vacante {
     id: string;
     titulo: string;
     empresa: string;
     ubicacion: string | null;
     modalidad: string | null;
+    nivelExperiencia: string | null;
     salarioMin: number | null;
     salarioMax: number | null;
     moneda: string | null;
+    descripcion: string;
+    urlOriginal: string | null;
+    fechaPublicacion: string | null;
 }
 
 interface RespuestaVacantes {
@@ -114,14 +118,31 @@ export async function listarVacantes(params: {
     pagina: number;
     ubicacion?: string;
     modalidad?: string;
+    nivelExperiencia?: string;
+    salarioMin?: number;
+    salarioMax?: number;
+    q?: string;
 }): Promise<RespuestaVacantes> {
     const query = new URLSearchParams({ pagina: String(params.pagina), limite: "12" });
     if (params.ubicacion) query.set("ubicacion", params.ubicacion);
     if (params.modalidad) query.set("modalidad", params.modalidad);
+    if (params.nivelExperiencia) query.set("nivelExperiencia", params.nivelExperiencia);
+    if (params.salarioMin !== undefined) query.set("salarioMin", String(params.salarioMin));
+    if (params.salarioMax !== undefined) query.set("salarioMax", String(params.salarioMax));
+    if (params.q) query.set("q", params.q);
     const respuesta = await fetch(`${API_URL}/vacantes?${query}`);
     const datos = await respuesta.json();
     if (!respuesta.ok) {
         throw new Error(datos.error || "Error al cargar las vacantes");
+    }
+    return datos;
+}
+
+export async function obtenerVacante(id: string): Promise<Vacante> {
+    const respuesta = await fetch(`${API_URL}/vacantes/${id}`);
+    const datos = await respuesta.json();
+    if (!respuesta.ok) {
+        throw new Error(datos.error || "Error al cargar la vacante");
     }
     return datos;
 }

@@ -23,7 +23,7 @@ export function RecomendadoParaTi({ usuarioId }: { usuarioId: string }) {
 
   useEffect(() => {
     setLoading(true);
-    fetch(`http://localhost:3000/recomendaciones/${usuarioId}`)
+    fetch(`${import.meta.env.VITE_API_URL}/recomendaciones/${usuarioId}`)
       .then((res) => {
         if (!res.ok) throw new Error('Error al cargar las recomendaciones');
         return res.json();
