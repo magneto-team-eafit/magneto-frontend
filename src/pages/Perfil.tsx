@@ -107,6 +107,11 @@ export function Perfil() {
               <Link to="/vacantes" className="font-semibold text-primary underline underline-offset-4">
                 Ver vacantes disponibles →
               </Link>
+            <Link
+                  to="/recomendaciones"
+                  className="font-semibold text-primary underline underline-offset-4">
+                  Ver recomendaciones para mí →
+              </Link>
             </p>
           </div>
 
