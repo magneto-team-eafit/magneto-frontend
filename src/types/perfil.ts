@@ -58,3 +58,38 @@ export interface RespuestaPerfil {
   completitud: number;
   desglose: DesgloseCompletitud;
 }
+
+// ---------- Estado de los formularios del wizard ----------
+// Los inputs HTML trabajan con texto: "" significa campo vacio.
+
+export interface FormDatosPersonales {
+  nombreCompleto: string;
+  telefono: string;
+  ubicacion: string;
+  resumen: string;
+}
+
+export interface FormExperiencia {
+  empresa: string;
+  cargo: string;
+  descripcion: string;
+  fechaInicio: string;
+  fechaFin: string;
+}
+
+export interface FormEducacion {
+  institucion: string;
+  titulo: string;
+  nivel: string;
+  fechaInicio: string;
+  fechaFin: string;
+}
+
+export interface FormPreferencias {
+  modalidadPreferida: string;
+  expectativaSalarial: string;
+  disponibilidad: string;
+}
+
+// Errores por campo: la clave es el nombre del campo y el valor su mensaje.
+export type ErroresForm = Record<string, string>;
