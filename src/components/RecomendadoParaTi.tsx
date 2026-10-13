@@ -1,138 +1,143 @@
 import { useEffect, useState } from 'react';
 
-interface DesgloseScore {
-  ubicacionScore: number;
-  modalidadScore: number;
-  palabrasClaveScore: number;
-}
+import {
+  obtenerRecomendaciones,
+  type Recomendacion,
+} from "../lib/api";
 
-interface Recomendacion {
-  vacanteId: string;
-  titulo: string;
-  empresa: string;
-  ubicacion: string | null;
-  modalidad: string | null;
-  score: number;
-  desglose: DesgloseScore;
-}
-
-export function RecomendadoParaTi({ usuarioId }: { usuarioId: string }) {
-  const [recomendaciones, setRecomendaciones] = useState<Recomendacion[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
+export function RecomendadoParaTi({
+  usuarioId,
+}: {
+  usuarioId: string;
+}) {
+  const [recomendaciones, setRecomendaciones] =
+    useState<Recomendacion[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   useEffect(() => {
-    setLoading(true);
-    fetch(`http://localhost:3000/recomendaciones/${usuarioId}`)
-      .then((res) => {
-        if (!res.ok) throw new Error('Error al cargar las recomendaciones');
-        return res.json();
-      })
-      .then((data: Recomendacion[]) => {
-        setRecomendaciones(data);
-        setLoading(false);
-      })
-      .catch((err) => {
-        setError(err.message);
-        setLoading(false);
-      });
+    let cancelado = false;
+
+    async function cargar() {
+      setLoading(true);
+      setError("");
+
+      try {
+        const datos = await obtenerRecomendaciones(usuarioId);
+
+        if (!cancelado) {
+          setRecomendaciones(datos);
+        }
+      } catch (err) {
+        if (!cancelado) {
+          setError(
+            err instanceof Error
+              ? err.message
+              : "No se pudieron cargar las recomendaciones."
+          );
+        }
+      } finally {
+        if (!cancelado) setLoading(false);
+      }
+    }
+
+    if (usuarioId) {
+      cargar();
+    } else {
+      setError("No se encontró el usuario de la sesión.");
+      setLoading(false);
+    }
+
+    return () => {
+      cancelado = true;
+    };
   }, [usuarioId]);
 
   if (loading) {
-    return (
-      <div className="p-6 bg-card border border-border rounded-lg shadow-sm text-center">
-        <p className="text-muted-foreground animate-pulse font-medium">
-          Calculando las mejores vacantes para ti...
-        </p>
-      </div>
-    );
+    return <p>Calculando las mejores vacantes para ti...</p>;
   }
 
   if (error) {
-    return (
-      <div className="p-4 bg-card border border-danger/20 rounded-lg text-danger text-sm">
-        Ocurrió un error al cargar tus recomendaciones: {error}
-      </div>
-    );
+    return <p role="alert">{error}</p>;
   }
 
   return (
     <section className="space-y-4">
-      {/* Encabezado de la sección */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-xl font-bold text-navy">Recomendado para ti</h2>
-          <p className="text-sm text-muted-foreground">
-            Basado en tu ubicación, modalidad e historial profesional
-          </p>
-        </div>
-        <span className="px-3 py-1 bg-surface border border-border text-xs font-semibold text-navy rounded-full">
-          {recomendaciones.length} Coincidencias
-        </span>
+      <div>
+        <h2 className="text-xl font-bold text-navy">
+          Recomendado para ti
+        </h2>
+        <p className="text-sm text-muted-foreground">
+          Vacantes ordenadas según su compatibilidad con tu perfil.
+        </p>
       </div>
 
-      {/* Lista de Recomendaciones */}
       {recomendaciones.length === 0 ? (
-        <div className="p-8 bg-card border border-border rounded-lg text-center">
-          <p className="text-muted-foreground">
-            No encontramos recomendaciones disponibles por ahora. Intenta completar más tu perfil.
-          </p>
-        </div>
+        <p className="rounded-lg border border-border bg-card p-6">
+          No encontramos recomendaciones disponibles.
+        </p>
       ) : (
         <div className="grid gap-4">
           {recomendaciones.map((rec) => (
             <article
               key={rec.vacanteId}
-              className="p-5 bg-card border border-border rounded-lg shadow-sm hover:border-primary/50 transition-colors flex flex-col md:flex-row md:items-center justify-between gap-4"
+              className="rounded-lg border border-border bg-card p-5"
             >
-              {/* Información principal de la vacante */}
-              <div className="space-y-2">
-                <div className="flex items-center gap-2">
-                  <h3 className="text-lg font-semibold text-navy leading-tight">
+              <div className="flex flex-col justify-between gap-3 sm:flex-row">
+                <div>
+                  <h3 className="text-lg font-semibold text-navy">
                     {rec.titulo}
                   </h3>
+                  <p className="text-sm text-muted-foreground">
+                    {rec.empresa}
+                  </p>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    {rec.ubicacion || "Ubicación no especificada"} ·{" "}
+                    {rec.modalidad || "Modalidad no especificada"}
+                  </p>
                 </div>
 
-                <p className="text-sm font-medium text-muted-foreground">
-                  {rec.empresa}
-                </p>
-
-                {/* Etiquetas de datos */}
-                <div className="flex flex-wrap items-center gap-2 pt-1 text-xs text-muted-foreground">
-                  <span className="px-2 py-0.5 bg-surface border border-border rounded font-medium">
-                   {rec.ubicacion || 'No especificada'}
-                  </span>
-                  <span className="px-2 py-0.5 bg-surface border border-border rounded font-medium">
-                    {rec.modalidad || 'No especificada'}
-                  </span>
+                <div className="sm:text-right">
+                  <p className="text-2xl font-bold text-primary">
+                    {rec.score}%
+                  </p>
+                  <p className="text-xs uppercase text-muted-foreground">
+                    Compatibilidad
+                  </p>
                 </div>
               </div>
 
-              {/* Lado derecho: Porcentaje y desglose del scoring */}
-              <div className="flex md:flex-col items-center md:items-end justify-between border-t md:border-t-0 pt-3 md:pt-0 border-border gap-3 min-w-[160px]">
-                <div className="text-right">
-                  <span className="text-2xl font-extrabold text-primary">
-                    {rec.score}%
-                  </span>
-                  <span className="block text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
-                    Compatibilidad
-                  </span>
-                </div>
+              <div className="mt-4">
+                <h4 className="text-sm font-semibold">
+                  ¿Por qué te recomendamos esta vacante?
+                </h4>
 
-                {/* Micro-desglose del motor de scoring */}
-                <div className="flex gap-1.5 text-[10px] font-medium text-navy bg-surface p-1.5 rounded border border-border">
-                  <span title="Score por Ubicación" className="px-1">
-                    {rec.desglose.ubicacionScore}pts
-                  </span>
-                  <span className="text-border">|</span>
-                  <span title="Score por Modalidad" className="px-1">
-                    {rec.desglose.modalidadScore}pts
-                  </span>
-                  <span className="text-border">|</span>
-                  <span title="Score por Palabras Clave" className="px-1">
-                    {rec.desglose.palabrasClaveScore}pts
-                  </span>
-                </div>
+                <ul className="mt-2 list-disc space-y-1 pl-5 text-sm">
+                  {rec.motivos.map((motivo, index) => (
+                    <li key={`${rec.vacanteId}-${index}`}>
+                      {motivo}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <div className="mt-4 rounded-md bg-surface p-3">
+                <h4 className="text-sm font-semibold">
+                  Desglose del puntaje
+                </h4>
+
+                <ul className="mt-2 space-y-1 text-sm">
+                  <li>
+                    Ubicación: {rec.desglose.ubicacionScore} / 35 puntos
+                  </li>
+                  <li>
+                    Modalidad: {rec.desglose.modalidadScore} / 35 puntos
+                  </li>
+                  <li>
+                    Palabras clave:{" "}
+                    {rec.desglose.palabrasClaveScore} / 30 puntos
+                  </li>
+                </ul>
               </div>
             </article>
           ))}
