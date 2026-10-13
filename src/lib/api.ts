@@ -1,4 +1,5 @@
-const API_URL = import.meta.env.VITE_API_URL;
+const API_URL =
+    import.meta.env.VITE_API_URL || "http://localhost:4000";
 
 interface LoginInput {
     email: string;
@@ -125,3 +126,78 @@ export async function listarVacantes(params: {
     }
     return datos;
 }
+
+
+export interface Recomendacion {
+    vacanteId: string;
+    titulo: string;
+    empresa: string;
+    ubicacion: string | null;
+    modalidad: string | null;
+    score: number;
+    desglose: {
+        ubicacionScore: number;
+        modalidadScore: number;
+        palabrasClaveScore: number;
+    };
+    motivos: string[];
+}
+
+export interface EntradaHistorial {
+    id: string;
+    usuarioId: string;
+    vacanteId: string;
+    score: number;
+    desglose: {
+        ubicacionScore: number;
+        modalidadScore: number;
+        palabrasClaveScore: number;
+    };
+    motivos: string[];
+    createdAt: string;
+    vacante: {
+        titulo: string;
+        empresa: string;
+        ubicacion: string | null;
+        modalidad: string | null;
+    };
+}
+
+export async function obtenerRecomendaciones(
+    usuarioId: string
+): Promise<Recomendacion[]> {
+    const respuesta = await fetch(
+        `${API_URL}/recomendaciones/${encodeURIComponent(usuarioId)}`,
+        { headers: authHeaders() }
+    );
+
+    const datos = await respuesta.json();
+
+    if (!respuesta.ok) {
+        throw new Error(
+            datos.error || "Error al obtener las recomendaciones."
+        );
+    }
+
+    return datos as Recomendacion[];
+}
+
+export async function obtenerHistorialRecomendaciones(
+    usuarioId: string
+): Promise<EntradaHistorial[]> {
+    const respuesta = await fetch(
+        `${API_URL}/recomendaciones/${encodeURIComponent(usuarioId)}/historial`,
+        { headers: authHeaders() }
+    );
+
+    const datos = await respuesta.json();
+
+    if (!respuesta.ok) {
+        throw new Error(
+            datos.error || "Error al consultar el historial."
+        );
+    }
+
+    return datos as EntradaHistorial[];
+}
+
