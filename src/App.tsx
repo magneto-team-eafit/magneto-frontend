@@ -4,6 +4,7 @@ import { Registro } from "./pages/Registro";
 import { Perfil } from "./pages/Perfil";
 import { Vacantes } from "./pages/Vacantes";
 import { RutaProtegida } from "./components/RutaProtegida";
+import { Recomendaciones } from "./pages/Recomendaciones";
 
 function App() {
     return (
@@ -24,6 +25,14 @@ function App() {
                     element={
                         <RutaProtegida>
                             <Vacantes />
+                        </RutaProtegida>
+                    }
+                />
+                <Route
+                    path="/recomendaciones"
+                    element={
+                        <RutaProtegida>
+                            <Recomendaciones />
                         </RutaProtegida>
                     }
                 />
