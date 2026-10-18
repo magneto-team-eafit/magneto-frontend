@@ -1,6 +1,7 @@
 const API_URL =
     import.meta.env.VITE_API_URL || "http://localhost:4000";
 
+export const API_URL = import.meta.env.VITE_API_URL;
 interface LoginInput {
     email: string;
     password: string;
@@ -61,7 +62,7 @@ interface PerfilData {
     completitud: number;
 }
 
-function authHeaders(): HeadersInit {
+export function authHeaders(): HeadersInit {
     const token = localStorage.getItem("token");
     return {
         "Content-Type": "application/json",
