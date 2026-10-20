@@ -93,3 +93,10 @@ export interface FormPreferencias {
 
 // Errores por campo: la clave es el nombre del campo y el valor su mensaje.
 export type ErroresForm = Record<string, string>;
+
+// Propiedades que comparten todos los pasos del wizard.
+export interface PropsPaso {
+  guardando: boolean; // hay una llamada al backend en curso
+  erroresServidor: ErroresForm; // errores por campo devueltos por el backend
+  onAtras?: () => void; // el primer paso no tiene "Atras"
+}
