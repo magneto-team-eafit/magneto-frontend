@@ -23,3 +23,4 @@ export const SALARIO_MAX = 100000000;
 export const MAX_EXPERIENCIAS = 20;
 export const MAX_EDUCACIONES = 10;
 export const MAX_HABILIDADES = 30;
+export const HABILIDADES_PARA_COMPLETAR = 3;
