@@ -1,244 +1,221 @@
-import { useState, useEffect, type FormEvent } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { User, Phone, MapPin, FileText, Briefcase, DollarSign, Clock } from "lucide-react";
-import { Button } from "../components/ui/Button";
-import { Input } from "../components/ui/Input";
-import { Field } from "../components/ui/Field";
-import { obtenerPerfil, actualizarPerfil } from "../lib/api";
+import { BarraCompletitud } from "../components/perfil/BarraCompletitud";
+import { IndicadorPasos } from "../components/perfil/IndicadorPasos";
+import { PasoDatosPersonales } from "../components/perfil/PasoDatosPersonales";
+import { PasoEducacion } from "../components/perfil/PasoEducacion";
+import { PasoExperiencia } from "../components/perfil/PasoExperiencia";
+import { PasoHabilidades } from "../components/perfil/PasoHabilidades";
+import { PasoPreferencias } from "../components/perfil/PasoPreferencias";
+import {
+  aFormDatosPersonales,
+  aFormEducaciones,
+  aFormExperiencias,
+  aFormPreferencias,
+} from "../lib/mapeoPerfil";
+import { PASOS, indicePrimerPasoIncompleto } from "../lib/pasosPerfil";
+import { ErrorApi, guardarPaso, obtenerPerfil } from "../lib/perfilApi";
+import type { ErroresForm, PasoPerfil, RespuestaPerfil } from "../types/perfil";
 
+// Pagina del perfil: coordina el wizard. Carga el perfil, decide que paso
+// mostrar, guarda cada paso en el backend y actualiza la barra de completitud
+// con lo que responde el backend (unica fuente del calculo).
 export function Perfil() {
-  const [nombreCompleto, setNombreCompleto] = useState("");
-  const [telefono, setTelefono] = useState("");
-  const [ubicacion, setUbicacion] = useState("");
-  const [resumen, setResumen] = useState("");
-  const [modalidadPreferida, setModalidadPreferida] = useState("");
-  const [expectativaSalarial, setExpectativaSalarial] = useState("");
-  const [disponibilidad, setDisponibilidad] = useState("");
-
-  const [completitud, setCompletitud] = useState(0);
-  const [cargandoInicial, setCargandoInicial] = useState(true);
+  const [respuesta, setRespuesta] = useState<RespuestaPerfil | null>(null);
+  const [pasoActual, setPasoActual] = useState(0);
+  const [maxAlcanzado, setMaxAlcanzado] = useState(0);
   const [guardando, setGuardando] = useState(false);
-  const [mensaje, setMensaje] = useState("");
+  const [erroresServidor, setErroresServidor] = useState<ErroresForm>({});
   const [errorGeneral, setErrorGeneral] = useState("");
+  const [mensaje, setMensaje] = useState("");
 
-  // Al entrar a la pantalla, traemos el perfil actual (si ya existe)
-  // para pre-llenar el formulario, en vez de empezar siempre en blanco.
+  // Al entrar se trae el perfil actual. Si ya existe (edicion), se habilitan
+  // todos los pasos y se abre el primero que falta por completar.
   useEffect(() => {
     async function cargar() {
       try {
-        const { perfil, completitud } = await obtenerPerfil();
-
-        if (perfil) {
-          setNombreCompleto(perfil.nombreCompleto);
-          setTelefono(perfil.telefono ?? "");
-          setUbicacion(perfil.ubicacion ?? "");
-          setResumen(perfil.resumen);
-          setModalidadPreferida(perfil.modalidadPreferida);
-          setExpectativaSalarial(perfil.expectativaSalarial ? String(perfil.expectativaSalarial) : "");
-          setDisponibilidad(perfil.disponibilidad);
-        } else {
-          // Perfil nuevo: usamos el nombre que quedo pendiente del
-          // registro (ver comentario en Registro.tsx).
-          const nombrePendiente = localStorage.getItem("nombrePendiente");
-          if (nombrePendiente) setNombreCompleto(nombrePendiente);
+        const datos = await obtenerPerfil();
+        setRespuesta(datos);
+        if (datos.perfil) {
+          setMaxAlcanzado(PASOS.length - 1);
+          setPasoActual(indicePrimerPasoIncompleto(datos.desglose));
         }
-
-        setCompletitud(completitud);
       } catch (error) {
-        if (error instanceof Error) setErrorGeneral(error.message);
-      } finally {
-        setCargandoInicial(false);
+        setErrorGeneral(error instanceof Error ? error.message : "No se pudo cargar tu perfil.");
       }
     }
-
     cargar();
   }, []);
 
-  async function handleSubmit(e: FormEvent) {
-    e.preventDefault();
+  // Al cambiar de paso se vuelve al inicio de la pagina.
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [pasoActual]);
+
+  function irAPaso(indice: number) {
+    setPasoActual(indice);
+    setErroresServidor({});
     setErrorGeneral("");
     setMensaje("");
+  }
 
-    if (!nombreCompleto.trim()) {
-      setErrorGeneral("El nombre completo es obligatorio.");
-      return;
-    }
-
+  async function guardar(paso: PasoPerfil, datos: object) {
     setGuardando(true);
-    try {
-      const resultado = await actualizarPerfil({
-        nombreCompleto,
-        telefono: telefono || null,
-        ubicacion: ubicacion || null,
-        resumen,
-        modalidadPreferida,
-        expectativaSalarial: expectativaSalarial ? Number(expectativaSalarial) : 0,
-        disponibilidad,
-      });
+    setErrorGeneral("");
+    setErroresServidor({});
+    setMensaje("");
 
-      setCompletitud(resultado.completitud);
-      setMensaje("Perfil guardado correctamente.");
-      localStorage.removeItem("nombrePendiente");
+    try {
+      const resultado = await guardarPaso(paso, datos);
+      setRespuesta(resultado);
+      if (paso === "datos-personales") localStorage.removeItem("nombrePendiente");
+
+      if (pasoActual < PASOS.length - 1) {
+        const siguiente = pasoActual + 1;
+        setMaxAlcanzado((actual) => Math.max(actual, siguiente));
+        setPasoActual(siguiente);
+      } else {
+        setMensaje("Perfil guardado correctamente.");
+      }
     } catch (error) {
-      if (error instanceof Error) setErrorGeneral(error.message);
+      if (error instanceof ErrorApi) {
+        setErroresServidor(error.detalles);
+        setErrorGeneral(error.message);
+      } else if (error instanceof Error) {
+        setErrorGeneral(error.message);
+      }
     } finally {
       setGuardando(false);
     }
   }
 
-  if (cargandoInicial) {
+  if (!respuesta) {
     return (
-        <div className="flex min-h-screen items-center justify-center bg-surface">
-          <p className="text-sm text-muted-foreground">Cargando tu perfil...</p>
-        </div>
+      <div className="flex min-h-screen items-center justify-center bg-surface">
+        <p className={errorGeneral ? "text-sm text-danger" : "text-sm text-muted-foreground"}>
+          {errorGeneral || "Cargando tu perfil..."}
+        </p>
+      </div>
     );
   }
 
+  const { perfil, completitud, desglose } = respuesta;
+  const paso = PASOS[pasoActual];
+  const propsComunes = {
+    guardando,
+    erroresServidor,
+    onAtras: pasoActual > 0 ? () => irAPaso(pasoActual - 1) : undefined,
+  };
+
+  // "key" fuerza a React a crear el formulario de cero al cambiar de paso,
+  // para que tome los valores guardados mas recientes.
+  function renderPaso() {
+    switch (paso.id) {
+      case "datos-personales":
+        return (
+          <PasoDatosPersonales
+            key={paso.id}
+            {...propsComunes}
+            inicial={aFormDatosPersonales(perfil, localStorage.getItem("nombrePendiente"))}
+            onGuardar={(datos) => guardar("datos-personales", datos)}
+          />
+        );
+      case "experiencia":
+        return (
+          <PasoExperiencia
+            key={paso.id}
+            {...propsComunes}
+            inicial={aFormExperiencias(perfil)}
+            onGuardar={(items) => guardar("experiencia", { experiencias: items })}
+          />
+        );
+      case "educacion":
+        return (
+          <PasoEducacion
+            key={paso.id}
+            {...propsComunes}
+            inicial={aFormEducaciones(perfil)}
+            onGuardar={(items) => guardar("educacion", { educaciones: items })}
+          />
+        );
+      case "habilidades":
+        return (
+          <PasoHabilidades
+            key={paso.id}
+            {...propsComunes}
+            inicial={perfil?.habilidades ?? []}
+            onGuardar={(habilidades) => guardar("habilidades", { habilidades })}
+          />
+        );
+      case "preferencias":
+        return (
+          <PasoPreferencias
+            key={paso.id}
+            {...propsComunes}
+            inicial={aFormPreferencias(perfil)}
+            onGuardar={(datos) => guardar("preferencias", datos)}
+          />
+        );
+    }
+  }
+
   return (
-      <div className="min-h-screen bg-surface px-6 py-10">
-        <div className="mx-auto max-w-[600px]">
-          <div className="mb-6">
-            <h1 className="text-2xl font-bold tracking-tight text-navy">Tu perfil</h1>
-            <p className="text-sm text-muted-foreground">
-              Con estos datos las empresas podrán comunicarse contigo y te mostramos vacantes
-              cerca de ti.
+    <div className="min-h-screen bg-surface px-6 py-10">
+      <div className="mx-auto max-w-[720px]">
+        <div className="mb-6">
+          <h1 className="text-2xl font-bold tracking-tight text-navy">Tu perfil</h1>
+          <p className="text-sm text-muted-foreground">
+            Completa tu perfil paso a paso: asi las empresas te encuentran y te mostramos vacantes afines a ti.
+          </p>
+          <p className="mt-3 flex flex-wrap gap-x-5 gap-y-1 text-sm">
+            <Link to="/vacantes" className="font-semibold text-primary underline underline-offset-4">
+              Ver vacantes disponibles →
+            </Link>
+            <Link to="/recomendaciones" className="font-semibold text-primary underline underline-offset-4">
+              Ver recomendaciones para mi →
+            </Link>
+            <Link to="/tablero" className="font-semibold text-primary underline underline-offset-4">
+              Mi tablero →
+            </Link>
+          </p>
+        </div>
+
+        <div className="mb-6">
+          <BarraCompletitud completitud={completitud} desglose={desglose} />
+        </div>
+
+        <div className="mb-6">
+          <IndicadorPasos
+            pasoActual={pasoActual}
+            maxAlcanzado={maxAlcanzado}
+            desglose={desglose}
+            onSeleccionar={irAPaso}
+          />
+        </div>
+
+        <div className="rounded-xl border border-border bg-card p-6">
+          <h2 className="mb-5 text-lg font-semibold text-navy">
+            Paso {pasoActual + 1} de {PASOS.length}: {paso.titulo}
+          </h2>
+
+          {errorGeneral && (
+            <p role="alert" className="mb-4 text-sm text-danger">
+              {errorGeneral}
             </p>
-            <p className="mt-3 text-sm">
-              <Link to="/vacantes" className="font-semibold text-primary underline underline-offset-4">
-                Ver vacantes disponibles →
-              </Link>
-            <Link
-                  to="/recomendaciones"
-                  className="font-semibold text-primary underline underline-offset-4">
-                  Ver recomendaciones para mí →
+          )}
+
+          {renderPaso()}
+
+          {mensaje && (
+            <p className="mt-4 text-sm text-primary">
+              {mensaje}{" "}
+              <Link to="/vacantes" className="font-semibold underline underline-offset-4">
+                Ver vacantes
               </Link>
             </p>
-          </div>
-
-          {/* Barra de completitud: usa directamente el numero que calculo
-            calcularCompletitud() en el backend, no un calculo duplicado aqui. */}
-          <div className="mb-8 rounded-xl border border-border bg-card p-5">
-            <div className="mb-2 flex items-center justify-between text-sm">
-              <span className="font-medium text-navy">Completitud del perfil</span>
-              <span className="font-semibold text-primary">{completitud}%</span>
-            </div>
-            <div className="h-2 w-full overflow-hidden rounded-full bg-border">
-              <div
-                  className="h-full rounded-full bg-primary transition-all duration-300"
-                  style={{ width: `${completitud}%` }}
-              />
-            </div>
-          </div>
-
-          <form onSubmit={handleSubmit} className="flex flex-col gap-5 rounded-xl border border-border bg-card p-6">
-            <Field label="Nombre completo" htmlFor="nombreCompleto">
-              <div className="relative">
-                <User className="pointer-events-none absolute left-3 top-1/2 size-5 -translate-y-1/2 text-muted-foreground" />
-                <Input
-                    id="nombreCompleto"
-                    value={nombreCompleto}
-                    onChange={(e) => setNombreCompleto(e.target.value)}
-                    className="pl-10"
-                />
-              </div>
-            </Field>
-
-            <Field label="Telefono" htmlFor="telefono">
-              <div className="relative">
-                <Phone className="pointer-events-none absolute left-3 top-1/2 size-5 -translate-y-1/2 text-muted-foreground" />
-                <Input
-                    id="telefono"
-                    placeholder="300 000 0000"
-                    value={telefono}
-                    onChange={(e) => setTelefono(e.target.value)}
-                    className="pl-10"
-                />
-              </div>
-            </Field>
-
-            <Field label="Ubicacion" htmlFor="ubicacion">
-              <div className="relative">
-                <MapPin className="pointer-events-none absolute left-3 top-1/2 size-5 -translate-y-1/2 text-muted-foreground" />
-                <Input
-                    id="ubicacion"
-                    placeholder="Medellin, Antioquia"
-                    value={ubicacion}
-                    onChange={(e) => setUbicacion(e.target.value)}
-                    className="pl-10"
-                />
-              </div>
-            </Field>
-
-            <Field label="Resumen profesional" htmlFor="resumen">
-              <div className="relative">
-                <FileText className="pointer-events-none absolute left-3 top-3 size-5 text-muted-foreground" />
-                <textarea
-                    id="resumen"
-                    rows={3}
-                    placeholder="Cuentanos brevemente sobre tu experiencia..."
-                    value={resumen}
-                    onChange={(e) => setResumen(e.target.value)}
-                    className="w-full rounded-lg border border-border bg-card py-2.5 pl-10 pr-3 text-sm text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20"
-                />
-              </div>
-            </Field>
-
-            <Field label="Modalidad preferida" htmlFor="modalidadPreferida">
-              <div className="relative">
-                <Briefcase className="pointer-events-none absolute left-3 top-1/2 size-5 -translate-y-1/2 text-muted-foreground" />
-                <select
-                    id="modalidadPreferida"
-                    value={modalidadPreferida}
-                    onChange={(e) => setModalidadPreferida(e.target.value)}
-                    className="w-full appearance-none rounded-lg border border-border bg-card py-2.5 pl-10 pr-3 text-sm text-foreground focus-visible:outline-none focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20"
-                >
-                  <option value="">Selecciona una opcion</option>
-                  <option value="Remoto">Remoto</option>
-                  <option value="Presencial">Presencial</option>
-                  <option value="Hibrido">Hibrido</option>
-                </select>
-              </div>
-            </Field>
-
-            <Field label="Expectativa salarial (COP)" htmlFor="expectativaSalarial">
-              <div className="relative">
-                <DollarSign className="pointer-events-none absolute left-3 top-1/2 size-5 -translate-y-1/2 text-muted-foreground" />
-                <Input
-                    id="expectativaSalarial"
-                    type="number"
-                    placeholder="3000000"
-                    value={expectativaSalarial}
-                    onChange={(e) => setExpectativaSalarial(e.target.value)}
-                    className="pl-10"
-                />
-              </div>
-            </Field>
-
-            <Field label="Disponibilidad" htmlFor="disponibilidad">
-              <div className="relative">
-                <Clock className="pointer-events-none absolute left-3 top-1/2 size-5 -translate-y-1/2 text-muted-foreground" />
-                <select
-                    id="disponibilidad"
-                    value={disponibilidad}
-                    onChange={(e) => setDisponibilidad(e.target.value)}
-                    className="w-full appearance-none rounded-lg border border-border bg-card py-2.5 pl-10 pr-3 text-sm text-foreground focus-visible:outline-none focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20"
-                >
-                  <option value="">Selecciona una opcion</option>
-                  <option value="Inmediata">Inmediata</option>
-                  <option value="1-2 semanas">1-2 semanas</option>
-                  <option value="1 mes">1 mes o mas</option>
-                </select>
-              </div>
-            </Field>
-
-            {mensaje && <p className="text-sm text-primary">{mensaje}</p>}
-            {errorGeneral && <p className="text-sm text-danger">{errorGeneral}</p>}
-
-            <Button type="submit" loading={guardando} className="w-full">
-              Guardar perfil
-            </Button>
-          </form>
+          )}
         </div>
       </div>
+    </div>
   );
 }
