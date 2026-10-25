@@ -38,7 +38,7 @@ export function Recomendaciones() {
   }, [usuarioId]);
 
   return (
-    <main className="min-h-screen bg-surface px-6 py-8">
+    <main className="px-6 py-8">
       <div className="mx-auto max-w-5xl space-y-10">
         <header>
           <Link

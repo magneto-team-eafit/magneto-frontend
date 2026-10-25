@@ -91,7 +91,7 @@ export function Perfil() {
 
   if (!respuesta) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-surface">
+      <div className="flex min-h-[60vh] items-center justify-center">
         <p className={errorGeneral ? "text-sm text-danger" : "text-sm text-muted-foreground"}>
           {errorGeneral || "Cargando tu perfil..."}
         </p>
@@ -160,23 +160,12 @@ export function Perfil() {
   }
 
   return (
-    <div className="min-h-screen bg-surface px-6 py-10">
+    <div className="px-6 py-10">
       <div className="mx-auto max-w-[720px]">
         <div className="mb-6">
           <h1 className="text-2xl font-bold tracking-tight text-navy">Tu perfil</h1>
           <p className="text-sm text-muted-foreground">
             Completa tu perfil paso a paso: asi las empresas te encuentran y te mostramos vacantes afines a ti.
-          </p>
-          <p className="mt-3 flex flex-wrap gap-x-5 gap-y-1 text-sm">
-            <Link to="/vacantes" className="font-semibold text-primary underline underline-offset-4">
-              Ver vacantes disponibles →
-            </Link>
-            <Link to="/recomendaciones" className="font-semibold text-primary underline underline-offset-4">
-              Ver recomendaciones para mi →
-            </Link>
-            <Link to="/tablero" className="font-semibold text-primary underline underline-offset-4">
-              Mi tablero →
-            </Link>
           </p>
         </div>
 
