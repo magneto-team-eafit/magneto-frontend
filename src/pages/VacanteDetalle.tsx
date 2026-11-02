@@ -41,13 +41,7 @@ export function VacanteDetalle() {
     }, [id]);
 
     return (
-        <div className="min-h-screen bg-surface">
-            <header className="border-b border-border bg-card px-6 py-4">
-                <span className="text-base font-semibold tracking-tight text-navy">
-                    Profile Manager · Magneto
-                </span>
-            </header>
-
+        <div>
             <main className="mx-auto max-w-3xl px-6 py-8">
                 <Link to="/vacantes" className="mb-4 inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-navy">
                     <ArrowLeft className="size-4" /> Volver al catálogo
