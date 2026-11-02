@@ -7,6 +7,7 @@ import { VacanteDetalle } from "./pages/VacanteDetalle";
 import { Recomendaciones } from "./pages/Recomendaciones";
 import { Tablero } from "./pages/Tablero";
 import { RutaProtegida } from "./components/RutaProtegida";
+import { LayoutApp } from "./components/layout/LayoutApp";
 
 function App() {
     return (
@@ -14,11 +15,13 @@ function App() {
             <Routes>
                 <Route path="/login" element={<Login />} />
                 <Route path="/registro" element={<Registro />} />
-                <Route path="/dashboard" element={<RutaProtegida><Perfil /></RutaProtegida>} />
-                <Route path="/vacantes" element={<RutaProtegida><Vacantes /></RutaProtegida>} />
-                <Route path="/vacantes/:id" element={<RutaProtegida><VacanteDetalle /></RutaProtegida>} />
-                <Route path="/recomendaciones" element={<RutaProtegida><Recomendaciones /></RutaProtegida>} />
-                <Route path="/tablero" element={<RutaProtegida><Tablero /></RutaProtegida>} />
+                <Route element={<RutaProtegida><LayoutApp /></RutaProtegida>}>
+                    <Route path="/dashboard" element={<Perfil />} />
+                    <Route path="/vacantes" element={<Vacantes />} />
+                    <Route path="/vacantes/:id" element={<VacanteDetalle />} />
+                    <Route path="/recomendaciones" element={<Recomendaciones />} />
+                    <Route path="/tablero" element={<Tablero />} />
+                </Route>
                 <Route path="*" element={<Navigate to="/login" replace />} />
             </Routes>
         </BrowserRouter>

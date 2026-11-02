@@ -88,18 +88,7 @@ export function Vacantes() {
     }, [pagina, ubicacion, modalidad, nivelExperiencia, salarioMin, salarioMax, q]);
 
     return (
-        <div className="min-h-screen bg-surface">
-            <header className="flex items-center justify-between border-b border-border bg-card px-6 py-4">
-                <span className="text-base font-semibold tracking-tight text-navy">
-                    Profile Manager · Magneto
-                </span>
-                <nav className="flex gap-4 text-sm">
-                    <Link to="/dashboard" className="text-muted-foreground hover:text-navy">Mi perfil</Link>
-                    <Link to="/recomendaciones" className="text-muted-foreground hover:text-navy">Recomendadas</Link>
-                    <Link to="/tablero" className="text-muted-foreground hover:text-navy">Mi tablero</Link>
-                </nav>
-            </header>
-
+        <div>
             <main className="mx-auto max-w-[1200px] px-6 py-8">
                 <h1 className="text-2xl font-bold text-navy">Vacantes disponibles</h1>
                 <p className="mt-1 text-sm text-muted-foreground">
