@@ -39,9 +39,15 @@ export function CampanaNotificaciones() {
 
   // Carga inicial y refresco periodico (cada 60s) para ver cambios de estado.
   useEffect(() => {
-    cargar();
-    const id = window.setInterval(cargar, 60_000);
-    return () => window.clearInterval(id);
+    if (!usuarioId) return;
+    // Pequeño retraso (0ms) para que el setState no sea sincrono dentro del
+    // effect: evita renders en cascada (regla react-hooks/set-state-in-effect).
+    const inicial = window.setTimeout(cargar, 0);
+    const intervalo = window.setInterval(cargar, 60_000);
+    return () => {
+      window.clearTimeout(inicial);
+      window.clearInterval(intervalo);
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [usuarioId]);
 
