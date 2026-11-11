@@ -1,6 +1,7 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import { Briefcase, KanbanSquare, LogOut, Search, Sparkles, UserRound } from "lucide-react";
 import { cn } from "../../lib/utils";
+import { CampanaNotificaciones } from "./CampanaNotificaciones";
 
 interface OpcionNavegacion {
   ruta: string;
@@ -62,15 +63,18 @@ export function Navbar() {
           ))}
         </nav>
 
-        <button
-          type="button"
-          onClick={cerrarSesion}
-          aria-label="Cerrar sesión"
-          className="inline-flex h-10 items-center gap-2 rounded-lg px-3 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-navy"
-        >
-          <LogOut className="size-4" />
-          <span className="hidden lg:inline">Salir</span>
-        </button>
+        <div className="flex items-center gap-1">
+          <CampanaNotificaciones />
+          <button
+            type="button"
+            onClick={cerrarSesion}
+            aria-label="Cerrar sesión"
+            className="inline-flex h-10 items-center gap-2 rounded-lg px-3 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-navy"
+          >
+            <LogOut className="size-4" />
+            <span className="hidden lg:inline">Salir</span>
+          </button>
+        </div>
       </div>
     </header>
   );

@@ -38,6 +38,12 @@ export function TableroPostulaciones({ usuarioId }: TableroPostulacionesProps) {
     };
   }, [usuarioId]);
 
+  // Reemplaza la postulacion por su version actualizada (nuevo estado), lo que
+  // hace que la tarjeta aparezca en la columna que corresponde.
+  function manejarEstadoCambiado(actualizada: Postulacion) {
+    setPostulaciones((prev) => prev.map((p) => (p.id === actualizada.id ? actualizada : p)));
+  }
+
   const contar = (codigo: string) => postulaciones.filter((p) => p.estado === codigo).length;
 
   const indicadores: Indicador[] = [
@@ -103,6 +109,7 @@ export function TableroPostulaciones({ usuarioId }: TableroPostulacionesProps) {
               key={estado.codigo}
               estado={estado}
               postulaciones={postulaciones.filter((p) => p.estado === estado.codigo)}
+              onEstadoCambiado={manejarEstadoCambiado}
             />
           ))}
         </div>

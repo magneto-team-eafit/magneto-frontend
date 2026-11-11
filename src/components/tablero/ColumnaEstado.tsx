@@ -6,9 +6,10 @@ import { TarjetaPostulacion } from "./TarjetaPostulacion";
 interface ColumnaEstadoProps {
   estado: DefinicionEstado;
   postulaciones: Postulacion[];
+  onEstadoCambiado: (postulacion: Postulacion) => void;
 }
 
-export function ColumnaEstado({ estado, postulaciones }: ColumnaEstadoProps) {
+export function ColumnaEstado({ estado, postulaciones, onEstadoCambiado }: ColumnaEstadoProps) {
   return (
     <section
       aria-label={estado.titulo}
@@ -31,7 +32,7 @@ export function ColumnaEstado({ estado, postulaciones }: ColumnaEstadoProps) {
       ) : (
         <div className="flex flex-col gap-3">
           {postulaciones.map((p) => (
-            <TarjetaPostulacion key={p.id} postulacion={p} />
+            <TarjetaPostulacion key={p.id} postulacion={p} onEstadoCambiado={onEstadoCambiado} />
           ))}
         </div>
       )}
