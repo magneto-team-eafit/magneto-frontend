@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { BarraCompletitud } from "../components/perfil/BarraCompletitud";
 import { IndicadorPasos } from "../components/perfil/IndicadorPasos";
+import { PanelSugerencias } from "../components/perfil/PanelSugerencias";
 import { PasoDatosPersonales } from "../components/perfil/PasoDatosPersonales";
 import { PasoEducacion } from "../components/perfil/PasoEducacion";
 import { PasoExperiencia } from "../components/perfil/PasoExperiencia";
@@ -15,7 +16,7 @@ import {
 } from "../lib/mapeoPerfil";
 import { PASOS, indicePrimerPasoIncompleto } from "../lib/pasosPerfil";
 import { ErrorApi, guardarPaso, obtenerPerfil } from "../lib/perfilApi";
-import type { ErroresForm, PasoPerfil, RespuestaPerfil } from "../types/perfil";
+import type { ErroresForm, PasoPerfil, RespuestaPerfil, SeccionPerfil } from "../types/perfil";
 
 // Pagina del perfil: coordina el wizard. Carga el perfil, decide que paso
 // mostrar, guarda cada paso en el backend y actualiza la barra de completitud
@@ -54,9 +55,16 @@ export function Perfil() {
 
   function irAPaso(indice: number) {
     setPasoActual(indice);
+    setMaxAlcanzado((actual) => Math.max(actual, indice));
     setErroresServidor({});
     setErrorGeneral("");
     setMensaje("");
+  }
+
+    // Lleva al paso del asistente donde se completa la seccion sugerida.
+  function irASeccion(seccion: SeccionPerfil) {
+    const indice = PASOS.findIndex((p) => p.seccion === seccion);
+    if (indice >= 0) irAPaso(indice);
   }
 
   async function guardar(paso: PasoPerfil, datos: object) {
@@ -99,7 +107,7 @@ export function Perfil() {
     );
   }
 
-  const { perfil, completitud, desglose } = respuesta;
+  const { perfil, completitud, desglose, sugerencias } = respuesta;
   const paso = PASOS[pasoActual];
   const propsComunes = {
     guardando,
@@ -172,6 +180,12 @@ export function Perfil() {
         <div className="mb-6">
           <BarraCompletitud completitud={completitud} desglose={desglose} />
         </div>
+
+        {perfil && sugerencias && (
+          <div className="mb-6">
+            <PanelSugerencias sugerencias={sugerencias} completitud={completitud} onSeleccionar={irASeccion} />
+          </div>
+        )}
 
         <div className="mb-6">
           <IndicadorPasos
