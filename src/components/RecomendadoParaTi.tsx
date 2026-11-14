@@ -44,6 +44,7 @@ export function RecomendadoParaTi({
     if (usuarioId) {
       cargar();
     } else {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- sin usuario no hay peticion que dispare el estado
       setError("No se encontró el usuario de la sesión.");
       setLoading(false);
     }
