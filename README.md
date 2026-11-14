@@ -46,9 +46,10 @@ Requisitos: Node.js 20 o superior y el [backend](https://github.com/magneto-team
 | `/vacantes` | Catálogo con búsqueda y filtros |
 | `/vacantes/:id` | Detalle de una vacante y botón para postularse |
 | `/recomendaciones` | Vacantes recomendadas con su explicación |
-| `/tablero` | Tablero de postulaciones por estado |
+| `/tablero` | Tablero de postulaciones por estado, con botones para cambiar de estado y ver la actividad de cada tarjeta |
 
-Todas, salvo el acceso, están protegidas por sesión y comparten la barra de navegación (`components/layout`).
+Todas, salvo el acceso, están protegidas por sesión y comparten la barra de navegación (`components/layout`),
+que incluye la campana de notificaciones.
 
 ## Estructura de `src`
 
