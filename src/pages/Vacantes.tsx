@@ -7,8 +7,6 @@ import { Field } from "../components/ui/Field";
 import { BotonPostular } from "../components/BotonPostular";
 import { listarVacantes, type Vacante } from "../lib/api";
 
-const usuarioId = localStorage.getItem("usuarioId") ?? "";
-
 const TRM_USD_A_COP = 3128.65;
 
 const formatoCOP = new Intl.NumberFormat("es-CO", {
@@ -223,7 +221,7 @@ export function Vacantes() {
                                             <Button type="button" variant="secondary" className="w-full">Ver detalle</Button>
                                         </Link>
                                         <div className="flex-1">
-                                            <BotonPostular usuarioId={usuarioId} vacanteId={v.id} />
+                                            <BotonPostular vacanteId={v.id} />
                                         </div>
                                     </div>
                                 </div>

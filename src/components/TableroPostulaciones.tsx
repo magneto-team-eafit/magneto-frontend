@@ -1,55 +1,82 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Briefcase, Hourglass, MessagesSquare } from "lucide-react";
+import { Briefcase, Hourglass, MessagesSquare, TrendingUp } from "lucide-react";
 import { ColumnaEstado } from "./tablero/ColumnaEstado";
-import { ESTADOS } from "../lib/estadosPostulacion";
-import { listarPostulaciones } from "../lib/postulacionesApi";
-import type { Postulacion } from "../types/postulacion";
-
-interface TableroPostulacionesProps {
-  usuarioId: string;
-}
+import { ESTADOS, type EstadoPostulacion } from "../lib/estadosPostulacion";
+import {
+  listarPostulaciones,
+  obtenerResumen,
+  cambiarEstadoPostulacion,
+} from "../lib/postulacionesApi";
+import type { Postulacion, ResumenPostulaciones } from "../types/postulacion";
 
 interface Indicador {
   etiqueta: string;
-  valor: number;
+  valor: string;
   icono: typeof Briefcase;
 }
 
-export function TableroPostulaciones({ usuarioId }: TableroPostulacionesProps) {
+export function TableroPostulaciones() {
   const [postulaciones, setPostulaciones] = useState<Postulacion[]>([]);
+  const [resumen, setResumen] = useState<ResumenPostulaciones | null>(null);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState("");
+  // Postulacion que se esta arrastrando (drag-and-drop).
+  const [arrastrando, setArrastrando] = useState<string | null>(null);
 
-  useEffect(() => {
-    let activo = true;
-    listarPostulaciones(usuarioId)
-      .then((datos) => {
-        if (activo) setPostulaciones(datos);
-      })
-      .catch((e) => {
-        if (activo) setError(e instanceof Error ? e.message : "No se pudieron cargar tus postulaciones.");
-      })
-      .finally(() => {
-        if (activo) setCargando(false);
-      });
-    return () => {
-      activo = false;
-    };
-  }, [usuarioId]);
-
-  // Reemplaza la postulacion por su version actualizada (nuevo estado), lo que
-  // hace que la tarjeta aparezca en la columna que corresponde.
-  function manejarEstadoCambiado(actualizada: Postulacion) {
-    setPostulaciones((prev) => prev.map((p) => (p.id === actualizada.id ? actualizada : p)));
+  async function cargar() {
+    setCargando(true);
+    setError("");
+    try {
+      const [lista, resumenDatos] = await Promise.all([listarPostulaciones(), obtenerResumen()]);
+      setPostulaciones(lista);
+      setResumen(resumenDatos);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "No se pudieron cargar tus postulaciones.");
+    } finally {
+      setCargando(false);
+    }
   }
 
-  const contar = (codigo: string) => postulaciones.filter((p) => p.estado === codigo).length;
+  useEffect(() => {
+    // Diferido para que el setState no sea sincrono dentro del effect
+    // (regla react-hooks/set-state-in-effect).
+    const t = window.setTimeout(cargar, 0);
+    return () => window.clearTimeout(t);
+  }, []);
+
+  // Reemplaza la postulacion por su version actualizada (nuevo estado) y
+  // recalcula el resumen local, para que las tarjetas y el reporte se muevan.
+  function manejarEstadoCambiado(actualizada: Postulacion) {
+    setPostulaciones((prev) => {
+      const siguiente = prev.map((p) => (p.id === actualizada.id ? actualizada : p));
+      setResumen(calcularResumen(siguiente));
+      return siguiente;
+    });
+  }
+
+  // Soltar una tarjeta sobre una columna: cambia el estado via API.
+  async function soltarEnColumna(estado: EstadoPostulacion) {
+    const id = arrastrando;
+    setArrastrando(null);
+    if (!id) return;
+    const actual = postulaciones.find((p) => p.id === id);
+    if (!actual || actual.estado === estado) return;
+    // Optimista: movemos la tarjeta ya; si falla, recargamos para revertir.
+    manejarEstadoCambiado({ ...actual, estado });
+    try {
+      const actualizada = await cambiarEstadoPostulacion(id, estado);
+      manejarEstadoCambiado(actualizada);
+    } catch {
+      await cargar();
+    }
+  }
 
   const indicadores: Indicador[] = [
-    { etiqueta: "Postulaciones", valor: postulaciones.length, icono: Briefcase },
-    { etiqueta: "En revisión", valor: contar("EN_REVISION"), icono: Hourglass },
-    { etiqueta: "Entrevistas", valor: contar("ENTREVISTA"), icono: MessagesSquare },
+    { etiqueta: "Postulaciones", valor: String(resumen?.total ?? postulaciones.length), icono: Briefcase },
+    { etiqueta: "En revisión", valor: String(resumen?.porEstado.EN_REVISION ?? 0), icono: Hourglass },
+    { etiqueta: "Entrevistas", valor: String(resumen?.porEstado.ENTREVISTA ?? 0), icono: MessagesSquare },
+    { etiqueta: "Tasa de avance", valor: `${Math.round((resumen?.tasaAvance ?? 0) * 100)}%`, icono: TrendingUp },
   ];
 
   return (
@@ -57,7 +84,9 @@ export function TableroPostulaciones({ usuarioId }: TableroPostulacionesProps) {
       <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-navy">Mi tablero de postulaciones</h1>
-          <p className="text-sm text-muted-foreground">Sigue en qué etapa va cada proceso de selección.</p>
+          <p className="text-sm text-muted-foreground">
+            Sigue en qué etapa va cada proceso. Arrastra una tarjeta a otra columna para cambiar su estado.
+          </p>
         </div>
 
         <ul className="flex flex-wrap gap-3">
@@ -110,10 +139,29 @@ export function TableroPostulaciones({ usuarioId }: TableroPostulacionesProps) {
               estado={estado}
               postulaciones={postulaciones.filter((p) => p.estado === estado.codigo)}
               onEstadoCambiado={manejarEstadoCambiado}
+              onSoltar={() => soltarEnColumna(estado.codigo)}
+              onArrastrarInicio={setArrastrando}
+              onArrastrarFin={() => setArrastrando(null)}
+              arrastrandoId={arrastrando}
             />
           ))}
         </div>
       )}
     </div>
   );
+}
+
+// Recalcula el resumen a partir de la lista local (para no pedirlo al backend
+// en cada cambio de estado). Mantiene la misma forma que GET /postulaciones/resumen.
+function calcularResumen(postulaciones: Postulacion[]): ResumenPostulaciones {
+  const porEstado = Object.fromEntries(
+    ESTADOS.map((e) => [e.codigo, 0])
+  ) as Record<EstadoPostulacion, number>;
+  for (const p of postulaciones) {
+    if (p.estado in porEstado) porEstado[p.estado as EstadoPostulacion]++;
+  }
+  const total = postulaciones.length;
+  const avanzadas = total - porEstado.POSTULADO;
+  const tasaAvance = total === 0 ? 0 : Number((avanzadas / total).toFixed(2));
+  return { total, porEstado, tasaAvance };
 }

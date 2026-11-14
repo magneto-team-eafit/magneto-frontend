@@ -1,4 +1,4 @@
-// Postulacion tal como la devuelve el backend (GET /postulaciones/:usuarioId).
+// Postulacion tal como la devuelve el backend (GET /postulaciones).
 
 import type { EstadoPostulacion } from "../lib/estadosPostulacion";
 
@@ -31,7 +31,7 @@ export interface RegistroActividad {
   createdAt: string;
 }
 
-// Notificacion dirigida al usuario: GET /notificaciones/:usuarioId
+// Notificacion dirigida al usuario: GET /notificaciones
 export interface Notificacion {
   id: string;
   usuarioId: string;
@@ -40,4 +40,11 @@ export interface Notificacion {
   mensaje: string;
   leida: boolean;
   createdAt: string;
+}
+
+// Reporte del tablero: GET /postulaciones/resumen
+export interface ResumenPostulaciones {
+  total: number;
+  porEstado: Record<EstadoPostulacion, number>;
+  tasaAvance: number; // entre 0 y 1
 }

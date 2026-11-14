@@ -14,7 +14,7 @@ function formatearFechaHora(iso: string): string {
 }
 
 export function CampanaNotificaciones() {
-  const usuarioId = localStorage.getItem("usuarioId") ?? "";
+  const hasToken = Boolean(localStorage.getItem("token"));
 
   const [abierto, setAbierto] = useState(false);
   const [notificaciones, setNotificaciones] = useState<Notificacion[]>([]);
@@ -25,11 +25,11 @@ export function CampanaNotificaciones() {
   const noLeidas = notificaciones.filter((n) => !n.leida).length;
 
   async function cargar() {
-    if (!usuarioId) return;
+    if (!hasToken) return;
     setCargando(true);
     setError("");
     try {
-      setNotificaciones(await listarNotificaciones(usuarioId));
+      setNotificaciones(await listarNotificaciones());
     } catch (e) {
       setError(e instanceof Error ? e.message : "No se pudieron cargar las notificaciones.");
     } finally {
@@ -39,7 +39,7 @@ export function CampanaNotificaciones() {
 
   // Carga inicial y refresco periodico (cada 60s) para ver cambios de estado.
   useEffect(() => {
-    if (!usuarioId) return;
+    if (!hasToken) return;
     // Pequeño retraso (0ms) para que el setState no sea sincrono dentro del
     // effect: evita renders en cascada (regla react-hooks/set-state-in-effect).
     const inicial = window.setTimeout(cargar, 0);
@@ -49,7 +49,7 @@ export function CampanaNotificaciones() {
       window.clearInterval(intervalo);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [usuarioId]);
+  }, [hasToken]);
 
   // Cerrar el panel al hacer clic fuera.
   useEffect(() => {
@@ -69,7 +69,7 @@ export function CampanaNotificaciones() {
       prev.map((n) => (n.id === notificacion.id ? { ...n, leida: true } : n))
     );
     try {
-      await marcarNotificacionLeida(notificacion.id, usuarioId);
+      await marcarNotificacionLeida(notificacion.id);
     } catch {
       setNotificaciones((prev) =>
         prev.map((n) => (n.id === notificacion.id ? { ...n, leida: false } : n))
@@ -81,9 +81,7 @@ export function CampanaNotificaciones() {
     const pendientes = notificaciones.filter((n) => !n.leida);
     if (pendientes.length === 0) return;
     setNotificaciones((prev) => prev.map((n) => ({ ...n, leida: true })));
-    await Promise.allSettled(
-      pendientes.map((n) => marcarNotificacionLeida(n.id, usuarioId))
-    );
+    await Promise.allSettled(pendientes.map((n) => marcarNotificacionLeida(n.id)));
   }
 
   return (

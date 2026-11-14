@@ -1,13 +1,12 @@
 import { useState } from "react";
 import { Button } from "./ui/Button";
-import { API_URL } from "../lib/api";
+import { crearPostulacion } from "../lib/postulacionesApi";
 
 interface Props {
-    usuarioId: string;
     vacanteId: string;
 }
 
-export function BotonPostular({ usuarioId, vacanteId }: Props) {
+export function BotonPostular({ vacanteId }: Props) {
     const [cargando, setCargando] = useState(false);
     const [postulado, setPostulado] = useState(false);
     const [error, setError] = useState("");
@@ -16,24 +15,16 @@ export function BotonPostular({ usuarioId, vacanteId }: Props) {
         setCargando(true);
         setError("");
         try {
-            const res = await fetch(`${API_URL}/postulaciones`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ usuarioId, vacanteId }),
-            });
-            const datos = await res.json().catch(() => ({}));
-            if (res.ok) {
+            await crearPostulacion(vacanteId);
+            setPostulado(true);
+        } catch (e) {
+            const mensaje = e instanceof Error ? e.message : "No se pudo completar la postulación.";
+            // Si ya estabas postulado (409), el mensaje del backend lo deja claro.
+            // Lo mostramos y marcamos como postulado para no reintentar.
+            if (/ya te has postulado/i.test(mensaje)) {
                 setPostulado(true);
-            } else if (res.status === 409) {
-                // Ya estabas postulado: el backend devuelve un 409 con mensaje
-                // claro. Lo tratamos como "ya postulado", no como un fallo.
-                setPostulado(true);
-                setError(datos.error || "Ya te has postulado a esta vacante.");
-            } else {
-                setError(datos.error || "No se pudo completar la postulación.");
             }
-        } catch {
-            setError("No se pudo conectar con el servidor. Inténtalo de nuevo.");
+            setError(mensaje);
         } finally {
             setCargando(false);
         }
