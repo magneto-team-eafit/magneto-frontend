@@ -63,6 +63,7 @@ export function Vacantes() {
 
     useEffect(() => {
         let cancelado = false;
+        // eslint-disable-next-line react-hooks/set-state-in-effect -- patron de carga de datos: el estado de carga se activa al iniciar la peticion
         setLoading(true);
         setError("");
 

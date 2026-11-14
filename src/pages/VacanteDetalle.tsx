@@ -30,6 +30,7 @@ export function VacanteDetalle() {
 
     useEffect(() => {
         if (!id) return;
+        // eslint-disable-next-line react-hooks/set-state-in-effect -- patron de carga de datos: el estado de carga se activa al iniciar la peticion
         setLoading(true);
         setError("");
         obtenerVacante(id)
