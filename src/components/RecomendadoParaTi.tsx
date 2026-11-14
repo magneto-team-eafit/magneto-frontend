@@ -1,4 +1,7 @@
 import { useEffect, useState } from 'react';
+import { Link } from "react-router-dom";
+import { BotonPostular } from "./BotonPostular";
+import { Button } from "./ui/Button";
 
 import {
   obtenerRecomendaciones,
@@ -98,9 +101,11 @@ export function RecomendadoParaTi({
             >
               <div className="flex flex-col justify-between gap-3 sm:flex-row">
                 <div>
-                  <h3 className="text-lg font-semibold text-navy">
-                    {rec.titulo}
-                  </h3>
+                  <Link to={`/vacantes/${rec.vacanteId}`}>
+                    <h3 className="text-lg font-semibold text-navy hover:underline">
+                      {rec.titulo}
+                    </h3>
+                  </Link>
                   <p className="text-sm text-muted-foreground">
                     {rec.empresa}
                   </p>
@@ -147,6 +152,17 @@ export function RecomendadoParaTi({
                     </li>
                   ))}
                 </ul>
+              </div>
+
+              <div className="mt-4 flex gap-2">
+                <Link to={`/vacantes/${rec.vacanteId}`} className="flex-1">
+                  <Button type="button" variant="secondary" className="w-full">
+                    Ver detalle
+                  </Button>
+                </Link>
+                <div className="flex-1">
+                  <BotonPostular vacanteId={rec.vacanteId} />
+                </div>
               </div>
             </article>
           ))}
