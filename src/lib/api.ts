@@ -103,6 +103,21 @@ export async function listarVacantes(params: {
 }
 
 
+// Puntaje por criterio y su maximo posible. Los maximos vienen del backend,
+// asi el frontend no tiene los pesos escritos a mano.
+export interface DesgloseRecomendacion {
+    habilidades: number;
+    palabrasClave: number;
+    ubicacion: number;
+    modalidad: number;
+    maximos: {
+        habilidades: number;
+        palabrasClave: number;
+        ubicacion: number;
+        modalidad: number;
+    };
+}
+
 export interface Recomendacion {
     vacanteId: string;
     titulo: string;
@@ -110,11 +125,7 @@ export interface Recomendacion {
     ubicacion: string | null;
     modalidad: string | null;
     score: number;
-    desglose: {
-        ubicacionScore: number;
-        modalidadScore: number;
-        palabrasClaveScore: number;
-    };
+    desglose: DesgloseRecomendacion;
     motivos: string[];
 }
 
@@ -123,11 +134,7 @@ export interface EntradaHistorial {
     usuarioId: string;
     vacanteId: string;
     score: number;
-    desglose: {
-        ubicacionScore: number;
-        modalidadScore: number;
-        palabrasClaveScore: number;
-    };
+    desglose: DesgloseRecomendacion;
     motivos: string[];
     createdAt: string;
     vacante: {
