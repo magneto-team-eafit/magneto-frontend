@@ -43,7 +43,6 @@ export function TableroPostulaciones() {
     // (regla react-hooks/set-state-in-effect).
     const t = window.setTimeout(cargar, 0);
     return () => window.clearTimeout(t);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Reemplaza la postulacion por su version actualizada (nuevo estado) y
