@@ -53,10 +53,21 @@ export interface AvanceSeccion {
 export type DesgloseCompletitud = Record<SeccionPerfil, AvanceSeccion>;
 
 // Forma unica de respuesta del backend para el perfil.
+// Una sugerencia le dice al usuario que le falta para subir su completitud.
+// El backend la calcula; hay una por cada seccion incompleta.
+export interface SugerenciaPerfil {
+  seccion: SeccionPerfil;
+  titulo: string;
+  detalle: string;
+  faltantes: string[];
+  puntos: number; // porcentaje que suma completar la seccion
+}
+
 export interface RespuestaPerfil {
   perfil: DatosPerfil | null; // null si el usuario aun no tiene perfil
   completitud: number;
   desglose: DesgloseCompletitud;
+  sugerencias: SugerenciaPerfil[];
 }
 
 // ---------- Estado de los formularios del wizard ----------
