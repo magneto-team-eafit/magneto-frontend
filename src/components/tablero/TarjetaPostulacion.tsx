@@ -10,6 +10,10 @@ interface TarjetaPostulacionProps {
   postulacion: Postulacion;
   // Avisa al tablero que esta postulacion cambio de estado, para moverla de columna.
   onEstadoCambiado: (postulacion: Postulacion) => void;
+  // Drag-and-drop
+  onArrastrarInicio: (postulacionId: string) => void;
+  onArrastrarFin: () => void;
+  arrastrando: boolean;
 }
 
 function formatearFecha(iso: string): string {
@@ -25,7 +29,13 @@ function formatearFechaHora(iso: string): string {
   });
 }
 
-export function TarjetaPostulacion({ postulacion, onEstadoCambiado }: TarjetaPostulacionProps) {
+export function TarjetaPostulacion({
+  postulacion,
+  onEstadoCambiado,
+  onArrastrarInicio,
+  onArrastrarFin,
+  arrastrando,
+}: TarjetaPostulacionProps) {
   const { vacante } = postulacion;
   const inicial = vacante.empresa.trim().charAt(0).toUpperCase() || "?";
 
@@ -75,7 +85,19 @@ export function TarjetaPostulacion({ postulacion, onEstadoCambiado }: TarjetaPos
   }
 
   return (
-    <article className="rounded-xl border border-border bg-card p-4 shadow-sm transition-all duration-150 hover:-translate-y-0.5 hover:shadow-md">
+    <article
+      draggable
+      onDragStart={(e) => {
+        e.dataTransfer.effectAllowed = "move";
+        e.dataTransfer.setData("text/plain", postulacion.id);
+        onArrastrarInicio(postulacion.id);
+      }}
+      onDragEnd={onArrastrarFin}
+      className={cn(
+        "cursor-grab rounded-xl border border-border bg-card p-4 shadow-sm transition-all duration-150 hover:-translate-y-0.5 hover:shadow-md active:cursor-grabbing",
+        arrastrando && "opacity-50 ring-2 ring-primary/40"
+      )}
+    >
       <div className="flex items-start gap-3">
         <span
           aria-hidden="true"

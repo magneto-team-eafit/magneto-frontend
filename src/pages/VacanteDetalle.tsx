@@ -4,8 +4,6 @@ import { Building2, MapPin, ArrowLeft, ExternalLink } from "lucide-react";
 import { BotonPostular } from "../components/BotonPostular";
 import { obtenerVacante, type Vacante } from "../lib/api";
 
-const usuarioId = localStorage.getItem("usuarioId") ?? "";
-
 const TRM_USD_A_COP = 3128.65;
 
 const formatoCOP = new Intl.NumberFormat("es-CO", {
@@ -88,7 +86,7 @@ export function VacanteDetalle() {
 
                         <div className="mt-6 flex flex-wrap items-center gap-3 border-t border-border pt-4">
                             <div className="w-48">
-                                <BotonPostular usuarioId={usuarioId} vacanteId={vacante.id} />
+                                <BotonPostular vacanteId={vacante.id} />
                             </div>
                             {vacante.urlOriginal && (
                                 <a
