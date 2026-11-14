@@ -5,6 +5,18 @@ import {
   type Recomendacion,
 } from "../lib/api";
 
+// Criterios que se muestran en el desglose, en este orden.
+const CRITERIOS = [
+  { clave: "habilidades", etiqueta: "Habilidades" },
+  { clave: "palabrasClave", etiqueta: "Palabras clave" },
+  { clave: "ubicacion", etiqueta: "Ubicación" },
+  { clave: "modalidad", etiqueta: "Modalidad" },
+] as const;
+
+function redondear(n: number): number {
+  return Math.round(n * 10) / 10;
+}
+
 export function RecomendadoParaTi({
   usuarioId,
 }: {
@@ -128,16 +140,12 @@ export function RecomendadoParaTi({
                 </h4>
 
                 <ul className="mt-2 space-y-1 text-sm">
-                  <li>
-                    Ubicación: {rec.desglose.ubicacionScore} / 35 puntos
-                  </li>
-                  <li>
-                    Modalidad: {rec.desglose.modalidadScore} / 35 puntos
-                  </li>
-                  <li>
-                    Palabras clave:{" "}
-                    {rec.desglose.palabrasClaveScore} / 30 puntos
-                  </li>
+                  {CRITERIOS.map(({ clave, etiqueta }) => (
+                    <li key={clave}>
+                      {etiqueta}: {redondear(rec.desglose[clave])} /{" "}
+                      {rec.desglose.maximos[clave]} puntos
+                    </li>
+                  ))}
                 </ul>
               </div>
             </article>
