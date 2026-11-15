@@ -1,24 +1,10 @@
 import { useEffect, useState } from 'react';
-import { Link } from "react-router-dom";
-import { BotonPostular } from "./BotonPostular";
-import { Button } from "./ui/Button";
+import { TarjetaRecomendacion } from "./recomendaciones/TarjetaRecomendacion";
 
 import {
   obtenerRecomendaciones,
   type Recomendacion,
 } from "../lib/api";
-
-// Criterios que se muestran en el desglose, en este orden.
-const CRITERIOS = [
-  { clave: "habilidades", etiqueta: "Habilidades" },
-  { clave: "palabrasClave", etiqueta: "Palabras clave" },
-  { clave: "ubicacion", etiqueta: "Ubicación" },
-  { clave: "modalidad", etiqueta: "Modalidad" },
-] as const;
-
-function redondear(n: number): number {
-  return Math.round(n * 10) / 10;
-}
 
 export function RecomendadoParaTi({
   usuarioId,
@@ -94,77 +80,8 @@ export function RecomendadoParaTi({
         </p>
       ) : (
         <div className="grid gap-4">
-          {recomendaciones.map((rec) => (
-            <article
-              key={rec.vacanteId}
-              className="rounded-lg border border-border bg-card p-5"
-            >
-              <div className="flex flex-col justify-between gap-3 sm:flex-row">
-                <div>
-                  <Link to={`/vacantes/${rec.vacanteId}`}>
-                    <h3 className="text-lg font-semibold text-navy hover:underline">
-                      {rec.titulo}
-                    </h3>
-                  </Link>
-                  <p className="text-sm text-muted-foreground">
-                    {rec.empresa}
-                  </p>
-                  <p className="mt-1 text-sm text-muted-foreground">
-                    {rec.ubicacion || "Ubicación no especificada"} ·{" "}
-                    {rec.modalidad || "Modalidad no especificada"}
-                  </p>
-                </div>
-
-                <div className="sm:text-right">
-                  <p className="text-2xl font-bold text-primary">
-                    {rec.score}%
-                  </p>
-                  <p className="text-xs uppercase text-muted-foreground">
-                    Compatibilidad
-                  </p>
-                </div>
-              </div>
-
-              <div className="mt-4">
-                <h4 className="text-sm font-semibold">
-                  ¿Por qué te recomendamos esta vacante?
-                </h4>
-
-                <ul className="mt-2 list-disc space-y-1 pl-5 text-sm">
-                  {rec.motivos.map((motivo, index) => (
-                    <li key={`${rec.vacanteId}-${index}`}>
-                      {motivo}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              <div className="mt-4 rounded-md bg-surface p-3">
-                <h4 className="text-sm font-semibold">
-                  Desglose del puntaje
-                </h4>
-
-                <ul className="mt-2 space-y-1 text-sm">
-                  {CRITERIOS.map(({ clave, etiqueta }) => (
-                    <li key={clave}>
-                      {etiqueta}: {redondear(rec.desglose[clave])} /{" "}
-                      {rec.desglose.maximos[clave]} puntos
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              <div className="mt-4 flex gap-2">
-                <Link to={`/vacantes/${rec.vacanteId}`} className="flex-1">
-                  <Button type="button" variant="secondary" className="w-full">
-                    Ver detalle
-                  </Button>
-                </Link>
-                <div className="flex-1">
-                  <BotonPostular vacanteId={rec.vacanteId} />
-                </div>
-              </div>
-            </article>
+          {recomendaciones.map((rec, indice) => (
+            <TarjetaRecomendacion key={rec.vacanteId} rec={rec} posicion={indice + 1} />
           ))}
         </div>
       )}
