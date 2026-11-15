@@ -35,7 +35,7 @@ export function PasoHabilidades({ inicial, guardando, erroresServidor, onAtras, 
       return;
     }
     if (habilidades.length >= MAX_HABILIDADES) {
-      setErrorLocal(`Maximo ${MAX_HABILIDADES} habilidades.`);
+      setErrorLocal(`Máximo ${MAX_HABILIDADES} habilidades.`);
       return;
     }
     setHabilidades((actuales) => [...actuales, limpio]);
@@ -91,13 +91,13 @@ export function PasoHabilidades({ inicial, guardando, erroresServidor, onAtras, 
 
       <div>
         <p className="mb-2 text-xs text-muted-foreground">
-          {habilidades.length} agregadas. Con {HABILIDADES_PARA_COMPLETAR} o mas, esta seccion cuenta completa en tu
+          {habilidades.length} agregadas. Con {HABILIDADES_PARA_COMPLETAR} o más, esta sección cuenta completa en tu
           perfil.
         </p>
 
         {habilidades.length === 0 ? (
           <p className="rounded-lg border border-dashed border-border p-4 text-sm text-muted-foreground">
-            Aun no has agregado habilidades.
+            Aún no has agregado habilidades.
           </p>
         ) : (
           <ul className="flex flex-wrap gap-2">
@@ -124,7 +124,7 @@ export function PasoHabilidades({ inicial, guardando, erroresServidor, onAtras, 
       <div className="flex justify-between">
         {onAtras ? (
           <Button type="button" variant="ghost" onClick={onAtras}>
-            Atras
+            Atrás
           </Button>
         ) : (
           <span />

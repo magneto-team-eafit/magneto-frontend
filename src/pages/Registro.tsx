@@ -38,9 +38,9 @@ export function Registro() {
 
     const nuevosErrores: Record<string, string> = {};
     if (!nombreCompleto.trim()) nuevosErrores.nombreCompleto = "Escribe tu nombre completo.";
-    if (!email.trim()) nuevosErrores.email = "Escribe tu correo electronico.";
-    if (password.length < 8) nuevosErrores.password = "Minimo 8 caracteres.";
-    if (confirmarPassword !== password) nuevosErrores.confirmarPassword = "Las contrasenas no coinciden.";
+    if (!email.trim()) nuevosErrores.email = "Escribe tu correo electrónico.";
+    if (password.length < 8) nuevosErrores.password = "Mínimo 8 caracteres.";
+    if (confirmarPassword !== password) nuevosErrores.confirmarPassword = "Las contraseñas no coinciden.";
     if (!aceptaTerminos) nuevosErrores.terminos = "Debes aceptar los terminos para continuar.";
     setErrors(nuevosErrores);
     if (Object.keys(nuevosErrores).length > 0) return;
@@ -109,7 +109,7 @@ export function Registro() {
                 </div>
               </Field>
 
-              <Field label="Correo electronico" htmlFor="email" error={errors.email}>
+              <Field label="Correo electrónico" htmlFor="email" error={errors.email}>
                 <div className="relative">
                   <AtSign className="pointer-events-none absolute left-3 top-1/2 size-5 -translate-y-1/2 text-muted-foreground" />
                   <Input
@@ -124,7 +124,7 @@ export function Registro() {
                 </div>
               </Field>
 
-              <Field label="Contrasena" htmlFor="password" error={errors.password}>
+              <Field label="Contraseña" htmlFor="password" error={errors.password}>
                 <div className="relative">
                   <Lock className="pointer-events-none absolute left-3 top-1/2 size-5 -translate-y-1/2 text-muted-foreground" />
                   <Input
@@ -158,7 +158,7 @@ export function Registro() {
                 )}
               </Field>
 
-              <Field label="Confirmar contrasena" htmlFor="confirmarPassword" error={errors.confirmarPassword}>
+              <Field label="Confirmar contraseña" htmlFor="confirmarPassword" error={errors.confirmarPassword}>
                 <div className="relative">
                   <Lock className="pointer-events-none absolute left-3 top-1/2 size-5 -translate-y-1/2 text-muted-foreground" />
                   <Input

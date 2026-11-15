@@ -48,7 +48,7 @@ export function PasoDatosPersonales({ inicial, guardando, erroresServidor, onGua
         />
       </Field>
 
-      <Field label="Telefono celular" htmlFor="telefono" error={error("telefono")}>
+      <Field label="Teléfono celular" htmlFor="telefono" error={error("telefono")}>
         <Input
           id="telefono"
           type="tel"
@@ -60,7 +60,7 @@ export function PasoDatosPersonales({ inicial, guardando, erroresServidor, onGua
         />
       </Field>
 
-      <Field label="Ubicacion" htmlFor="ubicacion" error={error("ubicacion")}>
+      <Field label="Ubicación" htmlFor="ubicacion" error={error("ubicacion")}>
         <Input
           id="ubicacion"
           placeholder="Ciudad, Departamento"
@@ -74,7 +74,7 @@ export function PasoDatosPersonales({ inicial, guardando, erroresServidor, onGua
         <Textarea
           id="resumen"
           rows={4}
-          placeholder="Cuentanos brevemente sobre tu perfil y lo que buscas..."
+          placeholder="Cuéntanos brevemente sobre tu perfil y lo que buscas..."
           value={form.resumen}
           onChange={(e) => cambiar("resumen", e.target.value)}
           error={Boolean(error("resumen"))}

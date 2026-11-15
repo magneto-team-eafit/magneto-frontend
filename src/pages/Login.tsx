@@ -20,8 +20,8 @@ export function Login() {
     setErrorGeneral("");
 
     const nuevosErrores: typeof errors = {};
-    if (!email.trim()) nuevosErrores.email = "Escribe tu correo electronico.";
-    if (!password.trim()) nuevosErrores.password = "Escribe tu contrasena.";
+    if (!email.trim()) nuevosErrores.email = "Escribe tu correo electrónico.";
+    if (!password.trim()) nuevosErrores.password = "Escribe tu contraseña.";
     setErrors(nuevosErrores);
     if (Object.keys(nuevosErrores).length > 0) return;
 
@@ -67,14 +67,14 @@ export function Login() {
 
           <div className="w-full max-w-[400px]">
             <div className="mb-8 flex flex-col gap-2">
-              <h1 className="text-2xl font-bold tracking-tight text-navy">Inicia sesion</h1>
+              <h1 className="text-2xl font-bold tracking-tight text-navy">Inicia sesión</h1>
               <p className="text-sm text-muted-foreground">
                 Continúa gestionando tu búsqueda de empleo
               </p>
             </div>
 
             <form onSubmit={handleSubmit} className="flex flex-col gap-5">
-              <Field label="Correo electronico" htmlFor="email" error={errors.email}>
+              <Field label="Correo electrónico" htmlFor="email" error={errors.email}>
                 <div className="relative">
                   <AtSign className="pointer-events-none absolute left-3 top-1/2 size-5 -translate-y-1/2 text-muted-foreground" />
                   <Input
@@ -89,7 +89,7 @@ export function Login() {
                 </div>
               </Field>
 
-              <Field label="Contrasena" htmlFor="password" error={errors.password}>
+              <Field label="Contraseña" htmlFor="password" error={errors.password}>
                 <div className="relative">
                   <Lock className="pointer-events-none absolute left-3 top-1/2 size-5 -translate-y-1/2 text-muted-foreground" />
                   <Input

@@ -3,7 +3,7 @@
 import type { ErroresForm } from "../types/perfil";
 
 export const MENSAJE_CAMPOS_INVALIDOS =
-  "Favor ingresar informacion valida en los campos obligatorios";
+  "Favor ingresar información válida en los campos obligatorios";
 
 // Avisa con una alerta y ubica el cursor en el primer campo con error,
 // segun su posicion en la pantalla (no segun el orden de los errores).

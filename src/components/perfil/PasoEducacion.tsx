@@ -60,7 +60,7 @@ export function PasoEducacion({ inicial, guardando, erroresServidor, onAtras, on
     <form onSubmit={enviar} noValidate className="flex flex-col gap-5">
       {items.length === 0 && (
         <p className="rounded-lg border border-dashed border-border p-4 text-sm text-muted-foreground">
-          Aun no has agregado estudios. Puedes continuar sin ellos, pero tu perfil quedara mas incompleto.
+          Aún no has agregado estudios. Puedes continuar sin ellos, pero tu perfil quedará más incompleto.
         </p>
       )}
 
@@ -69,7 +69,7 @@ export function PasoEducacion({ inicial, guardando, erroresServidor, onAtras, on
         return (
           <TarjetaItemLista key={i} titulo={`Estudio ${i + 1}`} onEliminar={() => eliminar(i)}>
             <div className="grid gap-4 sm:grid-cols-2">
-              <Field label="Institucion" htmlFor={`${p}.institucion`} error={error(`${p}.institucion`)}>
+              <Field label="Institución" htmlFor={`${p}.institucion`} error={error(`${p}.institucion`)}>
                 <Input
                   id={`${p}.institucion`}
                   value={item.institucion}
@@ -77,7 +77,7 @@ export function PasoEducacion({ inicial, guardando, erroresServidor, onAtras, on
                   error={Boolean(error(`${p}.institucion`))}
                 />
               </Field>
-              <Field label="Titulo o programa" htmlFor={`${p}.titulo`} error={error(`${p}.titulo`)}>
+              <Field label="Título o programa" htmlFor={`${p}.titulo`} error={error(`${p}.titulo`)}>
                 <Input
                   id={`${p}.titulo`}
                   value={item.titulo}
@@ -94,7 +94,7 @@ export function PasoEducacion({ inicial, guardando, erroresServidor, onAtras, on
                 onChange={(e) => cambiar(i, "nivel", e.target.value)}
                 error={Boolean(error(`${p}.nivel`))}
               >
-                <option value="">Selecciona una opcion</option>
+                <option value="">Selecciona una opción</option>
                 {NIVELES_EDUCACION.map((nivel) => (
                   <option key={nivel} value={nivel}>
                     {nivel}
@@ -114,7 +114,7 @@ export function PasoEducacion({ inicial, guardando, erroresServidor, onAtras, on
                 />
               </Field>
               <Field
-                label="Fecha de fin (vacia si sigues estudiando)"
+                label="Fecha de fin (vacía si sigues estudiando)"
                 htmlFor={`${p}.fechaFin`}
                 error={error(`${p}.fechaFin`)}
               >
@@ -141,7 +141,7 @@ export function PasoEducacion({ inicial, guardando, erroresServidor, onAtras, on
       <div className="flex justify-between">
         {onAtras ? (
           <Button type="button" variant="ghost" onClick={onAtras}>
-            Atras
+            Atrás
           </Button>
         ) : (
           <span />

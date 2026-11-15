@@ -13,7 +13,7 @@ export interface DefinicionPaso {
 export const PASOS: DefinicionPaso[] = [
   { id: "datos-personales", titulo: "Datos personales", seccion: "datosPersonales" },
   { id: "experiencia", titulo: "Experiencia", seccion: "experiencia" },
-  { id: "educacion", titulo: "Educacion", seccion: "educacion" },
+  { id: "educacion", titulo: "Educación", seccion: "educacion" },
   { id: "habilidades", titulo: "Habilidades", seccion: "habilidades" },
   { id: "preferencias", titulo: "Preferencias", seccion: "preferencias" },
 ];
