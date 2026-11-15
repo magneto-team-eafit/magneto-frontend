@@ -60,7 +60,7 @@ export function PasoExperiencia({ inicial, guardando, erroresServidor, onAtras, 
     <form onSubmit={enviar} noValidate className="flex flex-col gap-5">
       {items.length === 0 && (
         <p className="rounded-lg border border-dashed border-border p-4 text-sm text-muted-foreground">
-          Aun no has agregado experiencia laboral. Puedes continuar sin ella, pero tu perfil quedara mas incompleto.
+          Aún no has agregado experiencia laboral. Puedes continuar sin ella, pero tu perfil quedará más incompleto.
         </p>
       )}
 
@@ -98,7 +98,7 @@ export function PasoExperiencia({ inicial, guardando, erroresServidor, onAtras, 
                 />
               </Field>
               <Field
-                label="Fecha de fin (vacia si es tu trabajo actual)"
+                label="Fecha de fin (vacía si es tu trabajo actual)"
                 htmlFor={`${p}.fechaFin`}
                 error={error(`${p}.fechaFin`)}
               >
@@ -112,7 +112,7 @@ export function PasoExperiencia({ inicial, guardando, erroresServidor, onAtras, 
               </Field>
             </div>
 
-            <Field label="Descripcion (opcional)" htmlFor={`${p}.descripcion`} error={error(`${p}.descripcion`)}>
+            <Field label="Descripción (opcional)" htmlFor={`${p}.descripcion`} error={error(`${p}.descripcion`)}>
               <Textarea
                 id={`${p}.descripcion`}
                 placeholder="Funciones y logros principales..."
@@ -135,7 +135,7 @@ export function PasoExperiencia({ inicial, guardando, erroresServidor, onAtras, 
       <div className="flex justify-between">
         {onAtras ? (
           <Button type="button" variant="ghost" onClick={onAtras}>
-            Atras
+            Atrás
           </Button>
         ) : (
           <span />

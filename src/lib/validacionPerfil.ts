@@ -66,7 +66,7 @@ function validarFecha(
   }
   const fecha = new Date(`${valor}T00:00:00.000Z`);
   if (Number.isNaN(fecha.getTime()) || fecha.toISOString().slice(0, 10) !== valor) {
-    errores[campo] = `${o.etiqueta} no es una fecha valida.`;
+    errores[campo] = `${o.etiqueta} no es una fecha válida.`;
     return null;
   }
   if (fecha.getUTCFullYear() < 1950) {
@@ -102,9 +102,9 @@ export function validarDatosPersonales(f: FormDatosPersonales): ErroresForm {
   // El telefono se normaliza igual que en el backend: sin espacios, guiones ni +57.
   const telefono = f.telefono.replace(/[\s-]/g, "").replace(/^\+?57/, "");
   if (f.telefono.trim() === "") {
-    errores.telefono = "El telefono es obligatorio.";
+    errores.telefono = "El teléfono es obligatorio.";
   } else if (!REGEX_TELEFONO_CO.test(telefono)) {
-    errores.telefono = "Ingresa un celular colombiano de 10 digitos que empiece por 3.";
+    errores.telefono = "Ingresa un celular colombiano de 10 dígitos que empiece por 3.";
   }
 
   validarTexto(f.ubicacion, "ubicacion", errores, {
@@ -214,12 +214,12 @@ export function validarPreferencias(f: FormPreferencias): ErroresForm {
   const salarioTexto = f.expectativaSalarial.trim();
   const salario = Number(salarioTexto);
   if (salarioTexto === "") {
-    errores.expectativaSalarial = "La aspiracion salarial es un campo obligatorio.";
+    errores.expectativaSalarial = "La aspiración salarial es un campo obligatorio.";
   } else if (!Number.isInteger(salario)) {
-    errores.expectativaSalarial = "La aspiracion salarial debe ser un numero entero en COP.";
+    errores.expectativaSalarial = "La aspiración salarial debe ser un número entero en COP.";
   } else if (salario < SALARIO_MIN || salario > SALARIO_MAX) {
     errores.expectativaSalarial =
-      `La aspiracion salarial debe estar entre ${SALARIO_MIN.toLocaleString("es-CO")} y ${SALARIO_MAX.toLocaleString("es-CO")} COP.`;
+      `La aspiración salarial debe estar entre ${SALARIO_MIN.toLocaleString("es-CO")} y ${SALARIO_MAX.toLocaleString("es-CO")} COP.`;
   }
 
   if (!(DISPONIBILIDADES as readonly string[]).includes(f.disponibilidad)) {

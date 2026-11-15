@@ -50,7 +50,7 @@ export function PasoPreferencias({ inicial, guardando, erroresServidor, onAtras,
           onChange={(e) => cambiar("modalidadPreferida", e.target.value)}
           error={Boolean(error("modalidadPreferida"))}
         >
-          <option value="">Selecciona una opcion</option>
+          <option value="">Selecciona una opción</option>
           {MODALIDADES.map((modalidad) => (
             <option key={modalidad} value={modalidad}>
               {modalidad}
@@ -59,7 +59,7 @@ export function PasoPreferencias({ inicial, guardando, erroresServidor, onAtras,
         </Select>
       </Field>
 
-      <Field label="Aspiracion salarial mensual (COP)" htmlFor="expectativaSalarial" error={error("expectativaSalarial")}>
+      <Field label="Aspiración salarial mensual (COP)" htmlFor="expectativaSalarial" error={error("expectativaSalarial")}>
         <Input
           id="expectativaSalarial"
           type="text"
@@ -78,7 +78,7 @@ export function PasoPreferencias({ inicial, guardando, erroresServidor, onAtras,
           onChange={(e) => cambiar("disponibilidad", e.target.value)}
           error={Boolean(error("disponibilidad"))}
         >
-          <option value="">Selecciona una opcion</option>
+          <option value="">Selecciona una opción</option>
           {DISPONIBILIDADES.map((opcion) => (
             <option key={opcion} value={opcion}>
               {ETIQUETA_DISPONIBILIDAD[opcion] ?? opcion}
@@ -90,7 +90,7 @@ export function PasoPreferencias({ inicial, guardando, erroresServidor, onAtras,
       <div className="flex justify-between">
         {onAtras ? (
           <Button type="button" variant="ghost" onClick={onAtras}>
-            Atras
+            Atrás
           </Button>
         ) : (
           <span />

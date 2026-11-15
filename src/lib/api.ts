@@ -19,7 +19,7 @@ export async function login(input: LoginInput): Promise<LoginResponse> {
     });
     const datos = await respuesta.json();
     if (!respuesta.ok) {
-        throw new Error(datos.error || "Error al iniciar sesion");
+        throw new Error(datos.error || "Error al iniciar sesión");
     }
     return datos;
 }
