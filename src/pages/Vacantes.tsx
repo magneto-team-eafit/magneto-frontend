@@ -5,59 +5,15 @@ import { Input } from "../components/ui/Input";
 import { Button } from "../components/ui/Button";
 import { Field } from "../components/ui/Field";
 import { BotonPostular } from "../components/BotonPostular";
-import { listarVacantes, type Vacante } from "../lib/api";
-
-const TRM_USD_A_COP = 3128.65;
-
-// Los valores van tal cual los guarda el backend; la etiqueta es lo que ve la persona.
-const NIVELES = [
-    { valor: "Entry level", etiqueta: "Inicial" },
-    { valor: "Associate", etiqueta: "Asociado" },
-    { valor: "Mid-Senior level", etiqueta: "Intermedio / Senior" },
-    { valor: "Director", etiqueta: "Dirección" },
-];
+import { listarVacantes } from "../lib/api";
+import type { Vacante } from "../lib/api";
+import { AVISO_SALARIO_ESTIMADO, NIVELES, etiquetaNivel, fechaPublicacionCorta, formatearSalario } from "../lib/formatoVacante";
 
 const MODALIDADES = [
     { valor: "", etiqueta: "Todas" },
     { valor: "remoto", etiqueta: "Remoto" },
     { valor: "presencial", etiqueta: "Presencial" },
 ];
-
-function etiquetaNivel(valor: string | null): string | null {
-    if (!valor) return null;
-    return NIVELES.find((n) => n.valor === valor)?.etiqueta ?? valor;
-}
-
-function tiempoDesde(fecha: string | null): string | null {
-    if (!fecha) return null;
-    const dias = Math.floor((Date.now() - new Date(fecha).getTime()) / 86_400_000);
-    if (Number.isNaN(dias) || dias < 0) return null;
-    if (dias === 0) return "Hoy";
-    if (dias === 1) return "Hace 1 día";
-    if (dias < 30) return `Hace ${dias} días`;
-    const meses = Math.floor(dias / 30);
-    return meses === 1 ? "Hace 1 mes" : `Hace ${meses} meses`;
-}
-
-const formatoCOP = new Intl.NumberFormat("es-CO", {
-    style: "currency",
-    currency: "COP",
-    maximumFractionDigits: 0,
-});
-
-function formatearSalario(v: Vacante): string {
-    if (!v.salarioMin || !v.salarioMax) return "Salario a convenir";
-
-    if (v.moneda === "USD") {
-        const min = v.salarioMin * TRM_USD_A_COP;
-        const max = v.salarioMax * TRM_USD_A_COP;
-        return `${formatoCOP.format(min)} - ${formatoCOP.format(max)}`;
-    }
-
-    const num = new Intl.NumberFormat("es-CO", { maximumFractionDigits: 0 });
-    if (v.moneda === "COP" || !v.moneda) return `${formatoCOP.format(v.salarioMin)} - ${formatoCOP.format(v.salarioMax)}`;
-    return `${v.moneda} ${num.format(v.salarioMin)} - ${num.format(v.salarioMax)}`;
-}
 
 export function Vacantes() {
     const [vacantes, setVacantes] = useState<Vacante[]>([]);
@@ -138,6 +94,9 @@ export function Vacantes() {
                         <h1 className="text-2xl font-bold text-navy">Encuentra tu próxima vacante</h1>
                         <p className="mt-1 text-sm text-muted-foreground" aria-live="polite">
                             {loading ? "Buscando…" : `${total.toLocaleString("es-CO")} vacantes encontradas`}
+                        </p>
+                        <p className="mt-0.5 text-xs text-muted-foreground">
+                            Los salarios con la etiqueta «Estimado» son rangos de referencia: la oferta original no indica salario.
                         </p>
                     </div>
                     {hayFiltros && (
@@ -269,7 +228,8 @@ export function Vacantes() {
                         <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
                             {vacantes.map((v) => {
                                 const nivel = etiquetaNivel(v.nivelExperiencia);
-                                const publicada = tiempoDesde(v.fechaPublicacion);
+                                const publicada = fechaPublicacionCorta(v.fechaPublicacion);
+                                const salario = formatearSalario(v);
                                 return (
                                     <article key={v.id} className="flex flex-col rounded-xl border border-border bg-card p-5 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md">
                                         <div className="flex items-start gap-3">
@@ -298,11 +258,18 @@ export function Vacantes() {
                                                 <span className="rounded-full bg-navy/10 px-2.5 py-1 text-xs font-medium text-navy">{nivel}</span>
                                             )}
                                             {publicada && (
-                                                <span className="rounded-full bg-muted px-2.5 py-1 text-xs font-medium text-muted-foreground">{publicada}</span>
+                                                <span className="rounded-full bg-muted px-2.5 py-1 text-xs font-medium text-muted-foreground">Publicada {publicada}</span>
                                             )}
                                         </div>
 
-                                        <p className="mt-4 text-sm font-semibold text-navy">{formatearSalario(v)}</p>
+                                        <p className="mt-4 flex flex-wrap items-center gap-2 text-sm font-semibold text-navy">
+                                            {salario.texto}
+                                            {salario.estimado && (
+                                                <span title={AVISO_SALARIO_ESTIMADO} className="rounded-full bg-amber-100 px-2 py-0.5 text-[11px] font-medium text-amber-800">
+                                                    Estimado
+                                                </span>
+                                            )}
+                                        </p>
 
                                         <div className="mt-auto flex gap-2 pt-4">
                                             <Link to={`/vacantes/${v.id}`} className="flex-1">

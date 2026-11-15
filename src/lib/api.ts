@@ -69,6 +69,8 @@ export interface Vacante {
     descripcion: string;
     urlOriginal: string | null;
     fechaPublicacion: string | null;
+    // true = rango estimado (la oferta no decia el salario)
+    salarioEstimado: boolean;
 }
 
 interface RespuestaVacantes {
