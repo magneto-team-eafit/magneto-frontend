@@ -5,6 +5,7 @@ import { Button } from "../components/ui/Button";
 import { Input } from "../components/ui/Input";
 import { Field } from "../components/ui/Field";
 import { Checkbox } from "../components/ui/Checkbox";
+import { Logo } from "../components/marca/Logo";
 import { registrar, login } from "../lib/api";
 
 // Regla de negocio simple para medir que tan fuerte es el password,
@@ -72,9 +73,7 @@ export function Registro() {
     <div className="min-h-screen bg-white">
       <div className="grid min-h-screen lg:grid-cols-2">
         <div className="hidden flex-col justify-between bg-navy p-10 text-navy-foreground lg:flex">
-          <span className="text-base font-semibold tracking-tight">
-            Profile Manager · Magneto
-          </span>
+          <Logo variante="oscuro" size={40} />
           <blockquote className="max-w-md text-3xl font-semibold leading-tight">
             "Dame tu hoja de vida y tus expectativas; nosotros te conseguimos entrevistas."
           </blockquote>
@@ -82,8 +81,8 @@ export function Registro() {
         </div>
 
         <div className="flex flex-col items-center justify-center px-6 py-12 sm:px-12">
-          <div className="mb-8 text-base font-semibold tracking-tight text-navy lg:hidden">
-            Profile Manager · Magneto
+          <div className="mb-8 lg:hidden">
+            <Logo size={36} />
           </div>
 
           <div className="w-full max-w-[400px]">

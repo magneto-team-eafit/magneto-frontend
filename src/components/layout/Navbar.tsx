@@ -1,6 +1,7 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import { Briefcase, KanbanSquare, LogOut, Search, Sparkles, UserRound } from "lucide-react";
 import { cn } from "../../lib/utils";
+import { Logo } from "../marca/Logo";
 import { CampanaNotificaciones } from "./CampanaNotificaciones";
 
 interface OpcionNavegacion {
@@ -30,14 +31,8 @@ export function Navbar() {
   return (
     <header className="sticky top-0 z-30 border-b border-border bg-card/95 backdrop-blur">
       <div className="mx-auto flex h-16 max-w-[1200px] items-center justify-between gap-3 px-4 sm:px-6">
-        <NavLink to="/dashboard" className="flex items-center gap-2.5">
-          <span className="flex size-9 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-            <Briefcase className="size-5" />
-          </span>
-          <span className="hidden leading-tight sm:block">
-            <span className="block text-sm font-bold tracking-tight text-navy">Profile Manager</span>
-            <span className="block text-[11px] font-medium text-primary">Magneto</span>
-          </span>
+        <NavLink to="/dashboard" aria-label="Atrae, ir al tablero">
+          <Logo size={36} />
         </NavLink>
 
         <nav aria-label="Navegación principal" className="flex items-center gap-1.5 sm:gap-2">
