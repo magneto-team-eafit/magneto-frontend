@@ -57,3 +57,8 @@ export function fechaPublicacionCorta(fecha: string | null): string | null {
     if (Number.isNaN(d.getTime())) return null;
     return d.toLocaleDateString("es-CO", { day: "numeric", month: "short" }).replace(".", "");
 }
+
+// "3000000" -> "3.000.000" (puntos de miles, como se escribe en Colombia).
+export function conPuntosDeMiles(digitos: string): string {
+  return digitos.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+}

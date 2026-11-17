@@ -6,6 +6,7 @@ import { Input } from "../ui/Input";
 import { Select } from "../ui/Select";
 import { alertarYEnfocarPrimerError, sinError } from "../../lib/formularios";
 import { DISPONIBILIDADES, MODALIDADES } from "../../lib/opcionesPerfil";
+import { conPuntosDeMiles } from "../../lib/formatoVacante";
 import { hayErrores, validarPreferencias } from "../../lib/validacionPerfil";
 import type { ErroresForm, FormPreferencias, PropsPaso } from "../../types/perfil";
 
@@ -64,9 +65,9 @@ export function PasoPreferencias({ inicial, guardando, erroresServidor, onAtras,
           id="expectativaSalarial"
           type="text"
           inputMode="numeric"
-          placeholder="3500000"
-          value={form.expectativaSalarial}
-          onChange={(e) => cambiar("expectativaSalarial", e.target.value)}
+          placeholder="3.500.000"
+          value={conPuntosDeMiles(form.expectativaSalarial)}
+          onChange={(e) => cambiar("expectativaSalarial", e.target.value.replace(/\D/g, ""))}
           error={Boolean(error("expectativaSalarial"))}
         />
       </Field>

@@ -7,12 +7,7 @@ import { Field } from "../components/ui/Field";
 import { BotonPostular } from "../components/BotonPostular";
 import { listarVacantes } from "../lib/api";
 import type { Vacante } from "../lib/api";
-import { AVISO_SALARIO_ESTIMADO, NIVELES, etiquetaNivel, fechaPublicacionCorta, formatearSalario } from "../lib/formatoVacante";
-
-// "3000000" -> "3.000.000" (puntos de miles, como se escribe en Colombia).
-function conPuntosDeMiles(digitos: string): string {
-    return digitos.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-}
+import { AVISO_SALARIO_ESTIMADO, NIVELES, conPuntosDeMiles, etiquetaNivel, fechaPublicacionCorta, formatearSalario } from "../lib/formatoVacante";
 
 const MODALIDADES = [
     { valor: "", etiqueta: "Todas" },
