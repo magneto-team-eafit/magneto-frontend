@@ -12,7 +12,7 @@ interface IndicadorPasosProps {
 
 // Siempre se muestra el numero del paso (1 a 5) para que el orden se lea de un
 // vistazo. Que el paso este completo se indica con el color verde y una
-// pequena marca en la esquina; el paso que se esta viendo va en azul oscuro.
+// pequena marca en la esquina; el paso que se esta viendo va en azul oscuro, o en verde con un halo si ya esta completo.
 // Una linea une cada paso con el anterior (sin tocar los circulos).
 export function IndicadorPasos({ pasoActual, maxAlcanzado, desglose, onSeleccionar }: IndicadorPasosProps) {
   const estaCompleto = (i: number) => {
@@ -50,7 +50,8 @@ export function IndicadorPasos({ pasoActual, maxAlcanzado, desglose, onSeleccion
                 <span
                   className={cn(
                     "relative flex size-9 items-center justify-center rounded-full border-2 text-sm font-bold transition-all",
-                    actual && "border-navy bg-navy text-white shadow-md",
+                    actual && !completo && "border-navy bg-navy text-white shadow-md",
+                    actual && completo && "border-primary bg-primary text-white shadow-md ring-4 ring-primary/25",
                     !actual && completo && "border-primary bg-primary text-white",
                     !actual && !completo && "border-border bg-card text-muted-foreground"
                   )}

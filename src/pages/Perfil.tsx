@@ -210,12 +210,29 @@ export function Perfil() {
           {renderPaso()}
 
           {mensaje && (
-            <p className="mt-4 text-sm text-primary">
-              {mensaje}{" "}
-              <Link to="/vacantes" className="font-semibold underline underline-offset-4">
-                Ver vacantes
-              </Link>
-            </p>
+            <div className="mt-5 rounded-lg border border-primary/30 bg-primary/10 p-4">
+              <p className="text-sm font-medium text-primary">{mensaje}</p>
+              {completitud >= 100 ? (
+                <div className="mt-3 flex flex-wrap gap-3">
+                  <Link
+                    to="/recomendaciones"
+                    className="inline-flex h-10 items-center rounded-lg bg-primary px-4 text-sm font-semibold text-white transition-opacity hover:opacity-90"
+                  >
+                    Ver mis recomendaciones
+                  </Link>
+                  <Link
+                    to="/vacantes"
+                    className="inline-flex h-10 items-center rounded-lg border border-border bg-card px-4 text-sm font-semibold text-navy transition-colors hover:bg-muted"
+                  >
+                    Explorar todas las vacantes
+                  </Link>
+                </div>
+              ) : (
+                <p className="mt-1 text-sm text-muted-foreground">
+                  Completa los pasos que faltan para recibir recomendaciones personalizadas.
+                </p>
+              )}
+            </div>
           )}
         </div>
       </div>
