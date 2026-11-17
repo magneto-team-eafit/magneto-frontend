@@ -108,7 +108,7 @@ export function validarDatosPersonales(f: FormDatosPersonales): ErroresForm {
   }
 
   validarTexto(f.ubicacion, "ubicacion", errores, {
-    min: 2, max: 100, obligatorio: true, etiqueta: "La ubicacion",
+    min: 2, max: 100, obligatorio: true, etiqueta: "La ubicación",
   });
   validarTexto(f.resumen, "resumen", errores, {
     min: 20, max: 1000, obligatorio: true, etiqueta: "El resumen profesional",
@@ -123,7 +123,7 @@ export function validarExperiencias(lista: FormExperiencia[]): ErroresForm {
   const errores: ErroresForm = {};
 
   if (lista.length > MAX_EXPERIENCIAS) {
-    errores.experiencias = `Maximo ${MAX_EXPERIENCIAS} experiencias.`;
+    errores.experiencias = `Máximo ${MAX_EXPERIENCIAS} experiencias.`;
     return errores;
   }
 
@@ -136,7 +136,7 @@ export function validarExperiencias(lista: FormExperiencia[]): ErroresForm {
       min: 2, max: 100, obligatorio: true, etiqueta: "El cargo",
     });
     validarTexto(e.descripcion, `${p}.descripcion`, errores, {
-      min: 0, max: 1000, obligatorio: false, etiqueta: "La descripcion",
+      min: 0, max: 1000, obligatorio: false, etiqueta: "La descripción",
     });
     const inicio = validarFecha(e.fechaInicio, `${p}.fechaInicio`, errores, {
       obligatoria: true, etiqueta: "La fecha de inicio",
@@ -156,17 +156,17 @@ export function validarEducaciones(lista: FormEducacion[]): ErroresForm {
   const errores: ErroresForm = {};
 
   if (lista.length > MAX_EDUCACIONES) {
-    errores.educaciones = `Maximo ${MAX_EDUCACIONES} estudios.`;
+    errores.educaciones = `Máximo ${MAX_EDUCACIONES} estudios.`;
     return errores;
   }
 
   lista.forEach((e, i) => {
     const p = `educaciones[${i}]`;
     validarTexto(e.institucion, `${p}.institucion`, errores, {
-      min: 2, max: 150, obligatorio: true, etiqueta: "La institucion",
+      min: 2, max: 150, obligatorio: true, etiqueta: "La institución",
     });
     validarTexto(e.titulo, `${p}.titulo`, errores, {
-      min: 2, max: 150, obligatorio: true, etiqueta: "El titulo",
+      min: 2, max: 150, obligatorio: true, etiqueta: "El título",
     });
     if (!(NIVELES_EDUCACION as readonly string[]).includes(e.nivel)) {
       errores[`${p}.nivel`] = "Selecciona un nivel de estudios.";
@@ -197,7 +197,7 @@ export function validarNombreHabilidad(texto: string): string | null {
 export function validarHabilidades(habilidades: string[]): ErroresForm {
   const errores: ErroresForm = {};
   if (habilidades.length > MAX_HABILIDADES) {
-    errores.habilidades = `Maximo ${MAX_HABILIDADES} habilidades.`;
+    errores.habilidades = `Máximo ${MAX_HABILIDADES} habilidades.`;
   }
   return errores;
 }
