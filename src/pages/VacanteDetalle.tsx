@@ -3,24 +3,7 @@ import { Link, useParams } from "react-router-dom";
 import { Building2, MapPin, ArrowLeft, ExternalLink } from "lucide-react";
 import { BotonPostular } from "../components/BotonPostular";
 import { obtenerVacante, type Vacante } from "../lib/api";
-
-const TRM_USD_A_COP = 3128.65;
-
-const formatoCOP = new Intl.NumberFormat("es-CO", {
-    style: "currency",
-    currency: "COP",
-    maximumFractionDigits: 0,
-});
-
-function formatearSalario(v: Vacante): string {
-    if (!v.salarioMin || !v.salarioMax) return "Salario a convenir";
-    if (v.moneda === "USD") {
-        const min = v.salarioMin * TRM_USD_A_COP;
-        const max = v.salarioMax * TRM_USD_A_COP;
-        return `${formatoCOP.format(min)} - ${formatoCOP.format(max)}`;
-    }
-    return `${v.moneda ?? ""} ${v.salarioMin.toLocaleString()} - ${v.salarioMax.toLocaleString()}`;
-}
+import { AVISO_SALARIO_ESTIMADO, etiquetaNivel, fechaPublicacionCorta, formatearSalario } from "../lib/formatoVacante";
 
 export function VacanteDetalle() {
     const { id } = useParams<{ id: string }>();
@@ -72,12 +55,22 @@ export function VacanteDetalle() {
                             )}
                             {vacante.nivelExperiencia && (
                                 <span className="rounded-full bg-surface border border-border px-3 py-1 text-xs font-medium text-navy">
-                                    {vacante.nivelExperiencia}
+                                    {etiquetaNivel(vacante.nivelExperiencia)}
                                 </span>
                             )}
                             <span className="rounded-full bg-surface border border-border px-3 py-1 text-xs font-medium text-navy">
-                                {formatearSalario(vacante)}
+                                {formatearSalario(vacante).texto}
                             </span>
+                            {formatearSalario(vacante).estimado && (
+                                <span title={AVISO_SALARIO_ESTIMADO} className="rounded-full bg-amber-100 px-3 py-1 text-xs font-medium text-amber-800">
+                                    Salario estimado
+                                </span>
+                            )}
+                            {fechaPublicacionCorta(vacante.fechaPublicacion) && (
+                                <span className="rounded-full bg-muted px-3 py-1 text-xs font-medium text-muted-foreground">
+                                    Publicada {fechaPublicacionCorta(vacante.fechaPublicacion)}
+                                </span>
+                            )}
                         </div>
 
                         <div className="mt-6 border-t border-border pt-4">
