@@ -2,14 +2,18 @@ import { useEffect, useState } from 'react';
 import { TarjetaRecomendacion } from "./recomendaciones/TarjetaRecomendacion";
 
 import {
+  descartarRecomendacion,
   obtenerRecomendaciones,
   type Recomendacion,
 } from "../lib/api";
 
 export function RecomendadoParaTi({
   usuarioId,
+  onDescartada,
 }: {
   usuarioId: string;
+  // Aviso al padre para que quite la vacante de otras listas (el historial).
+  onDescartada?: (vacanteId: string) => void;
 }) {
   const [recomendaciones, setRecomendaciones] =
     useState<Recomendacion[]>([]);
@@ -55,6 +59,12 @@ export function RecomendadoParaTi({
     };
   }, [usuarioId]);
 
+  async function descartar(vacanteId: string) {
+    await descartarRecomendacion(usuarioId, vacanteId);
+    setRecomendaciones((actuales) => actuales.filter((r) => r.vacanteId !== vacanteId));
+    onDescartada?.(vacanteId);
+  }
+
   if (loading) {
     return <p>Calculando las mejores vacantes para ti...</p>;
   }
@@ -81,7 +91,7 @@ export function RecomendadoParaTi({
       ) : (
         <div className="grid gap-4">
           {recomendaciones.map((rec, indice) => (
-            <TarjetaRecomendacion key={rec.vacanteId} rec={rec} posicion={indice + 1} />
+            <TarjetaRecomendacion key={rec.vacanteId} rec={rec} posicion={indice + 1} onDescartar={descartar} />
           ))}
         </div>
       )}

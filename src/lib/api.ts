@@ -185,6 +185,26 @@ export async function obtenerHistorialRecomendaciones(
     return datos as EntradaHistorial[];
 }
 
+// "No me interesa": la vacante deja de aparecer en las recomendaciones.
+export async function descartarRecomendacion(
+    usuarioId: string,
+    vacanteId: string
+): Promise<void> {
+    const respuesta = await fetch(
+        `${API_URL}/recomendaciones/${encodeURIComponent(usuarioId)}/descartes`,
+        {
+            method: "POST",
+            headers: { "Content-Type": "application/json", ...authHeaders() },
+            body: JSON.stringify({ vacanteId }),
+        }
+    );
+
+    if (!respuesta.ok) {
+        const datos = await respuesta.json().catch(() => ({}));
+        throw new Error(datos.error || "No se pudo descartar la vacante.");
+    }
+}
+
 export async function obtenerVacante(id: string): Promise<Vacante> {
     const respuesta = await fetch(`${API_URL}/vacantes/${id}`);
     const datos = await respuesta.json();

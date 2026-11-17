@@ -1,5 +1,6 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Building2, Check, MapPin } from "lucide-react";
+import { Building2, Check, MapPin, X } from "lucide-react";
 import type { Recomendacion } from "../../lib/api";
 import { cn } from "../../lib/utils";
 import { BotonPostular } from "../BotonPostular";
@@ -68,8 +69,29 @@ function BarraCriterio({ etiqueta, valor, maximo }: { etiqueta: string; valor: n
   );
 }
 
-export function TarjetaRecomendacion({ rec, posicion }: { rec: Recomendacion; posicion: number }) {
+interface TarjetaRecomendacionProps {
+  rec: Recomendacion;
+  posicion: number;
+  // Si se pasa, aparece el boton "No me interesa". Debe lanzar un error si falla.
+  onDescartar?: (vacanteId: string) => Promise<void>;
+}
+
+export function TarjetaRecomendacion({ rec, posicion, onDescartar }: TarjetaRecomendacionProps) {
   const nivel = nivelDe(rec.score);
+  const [descartando, setDescartando] = useState(false);
+  const [errorDescarte, setErrorDescarte] = useState("");
+
+  async function descartar() {
+    if (!onDescartar) return;
+    setDescartando(true);
+    setErrorDescarte("");
+    try {
+      await onDescartar(rec.vacanteId);
+    } catch (err) {
+      setErrorDescarte(err instanceof Error ? err.message : "No se pudo descartar la vacante.");
+      setDescartando(false);
+    }
+  }
 
   return (
     <article className="rounded-lg border border-border bg-card p-5 transition-shadow hover:shadow-md">
@@ -136,7 +158,23 @@ export function TarjetaRecomendacion({ rec, posicion }: { rec: Recomendacion; po
         <div className="flex-1">
           <BotonPostular vacanteId={rec.vacanteId} />
         </div>
+        {onDescartar && (
+          <Button
+            type="button"
+            variant="ghost"
+            loading={descartando}
+            onClick={descartar}
+            title="No volverás a ver esta vacante en tus recomendaciones"
+          >
+            <X className="size-4" /> No me interesa
+          </Button>
+        )}
       </div>
+      {errorDescarte && (
+        <p role="alert" className="mt-2 text-sm text-danger">
+          {errorDescarte}
+        </p>
+      )}
     </article>
   );
 }

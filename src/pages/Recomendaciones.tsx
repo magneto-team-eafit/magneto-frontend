@@ -53,7 +53,12 @@ export function Recomendaciones() {
           </h1>
         </header>
 
-        <RecomendadoParaTi usuarioId={usuarioId} />
+        <RecomendadoParaTi
+          usuarioId={usuarioId}
+          onDescartada={(vacanteId) =>
+            setHistorial((actual) => actual.filter((h) => h.vacanteId !== vacanteId))
+          }
+        />
 
         <section className="space-y-4">
           <div>
