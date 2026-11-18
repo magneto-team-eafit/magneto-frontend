@@ -1,7 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 import { Bell, Check, Loader2 } from "lucide-react";
 import { cn } from "../../lib/utils";
-import { listarNotificaciones, marcarNotificacionLeida } from "../../lib/postulacionesApi";
+import {
+  EVENTO_NOTIFICACIONES,
+  listarNotificaciones,
+  marcarNotificacionLeida,
+} from "../../lib/postulacionesApi";
 import type { Notificacion } from "../../types/postulacion";
 
 function formatearFechaHora(iso: string): string {
@@ -37,16 +41,24 @@ export function CampanaNotificaciones() {
     }
   }
 
-  // Carga inicial y refresco periodico (cada 60s) para ver cambios de estado.
+  // Carga inicial, refresco periodico (cada 15s), recarga inmediata cuando la
+  // app avisa de un cambio (postularse, mover una tarjeta) y al volver a la pestana.
   useEffect(() => {
     if (!hasToken) return;
     // Pequeño retraso (0ms) para que el setState no sea sincrono dentro del
     // effect: evita renders en cascada (regla react-hooks/set-state-in-effect).
     const inicial = window.setTimeout(cargar, 0);
-    const intervalo = window.setInterval(cargar, 60_000);
+    const intervalo = window.setInterval(cargar, 15_000);
+    const alVolver = () => {
+      if (document.visibilityState === "visible") cargar();
+    };
+    window.addEventListener(EVENTO_NOTIFICACIONES, cargar);
+    document.addEventListener("visibilitychange", alVolver);
     return () => {
       window.clearTimeout(inicial);
       window.clearInterval(intervalo);
+      window.removeEventListener(EVENTO_NOTIFICACIONES, cargar);
+      document.removeEventListener("visibilitychange", alVolver);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hasToken]);
@@ -89,7 +101,11 @@ export function CampanaNotificaciones() {
       <button
         type="button"
         aria-label={`Notificaciones${noLeidas > 0 ? ` (${noLeidas} sin leer)` : ""}`}
-        onClick={() => setAbierto((v) => !v)}
+        onClick={() => {
+          // Al abrir el panel recargamos para mostrar lo ultimo.
+          if (!abierto) cargar();
+          setAbierto((v) => !v);
+        }}
         className="relative inline-flex size-10 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-navy"
       >
         <Bell className="size-5" />

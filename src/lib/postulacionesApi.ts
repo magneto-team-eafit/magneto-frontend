@@ -11,6 +11,15 @@ import type {
 } from "../types/postulacion";
 import type { EstadoPostulacion } from "./estadosPostulacion";
 
+// Aviso interno para que la campana recargue sus notificaciones al instante.
+// Es como un "trigger" del navegador: cuando algo cambia en el servidor,
+// avisamos a quien este escuchando en vez de esperar al refresco periodico.
+export const EVENTO_NOTIFICACIONES = "notificaciones:actualizar";
+
+function avisarCambioNotificaciones() {
+  window.dispatchEvent(new Event(EVENTO_NOTIFICACIONES));
+}
+
 // Postularse a una vacante. El usuario sale del token.
 export async function crearPostulacion(vacanteId: string): Promise<Postulacion> {
   const respuesta = await fetch(`${API_URL}/postulaciones`, {
@@ -22,6 +31,7 @@ export async function crearPostulacion(vacanteId: string): Promise<Postulacion> 
   if (!respuesta.ok) {
     throw new Error(datos.error || "No se pudo completar la postulación.");
   }
+  avisarCambioNotificaciones();
   return datos;
 }
 
@@ -60,6 +70,7 @@ export async function cambiarEstadoPostulacion(
   if (!respuesta.ok) {
     throw new Error(datos.error || "No se pudo cambiar el estado de la postulación.");
   }
+  avisarCambioNotificaciones();
   return datos;
 }
 
